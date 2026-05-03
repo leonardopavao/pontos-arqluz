@@ -137,7 +137,7 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <div class="shell">
-  <div id="cfg-banner">⚠️ Configure a URL do Apps Script em <b>SCRIPT_URL</b> no topo do arquivo index.html antes de usar.</div>
+  
 
   <div class="topbar">
     <div>
@@ -437,7 +437,7 @@ tr:last-child td{border-bottom:none}
    ⚠️  CONFIGURE AQUI — cole a URL do seu Apps Script deployado
    Exemplo: https://script.google.com/macros/s/AKfyc.../exec
    ============================================================ */
-var SCRIPT_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
+var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxoWCsWI9Qx-mVQPW2uuDOX-HXl4vuX-u_xWlqEplQ84W65aD2UUlfDHDr_FMGzy0X-/exec";
 
 /* ============================================================
    API — substitui google.script.run com fetch
@@ -483,7 +483,7 @@ function toggleTema() {
     document.addEventListener("DOMContentLoaded", function() {
       document.querySelector(".theme-btn").textContent = t === "dark" ? "🌙" : "☀️";
       // Mostra banner se URL não foi configurada
-      if (SCRIPT_URL === "COLE_AQUI_A_URL_DO_APPS_SCRIPT") {
+      if (SCRIPT_URL === "https://script.google.com/macros/s/AKfycbxoWCsWI9Qx-mVQPW2uuDOX-HXl4vuX-u_xWlqEplQ84W65aD2UUlfDHDr_FMGzy0X-/exec") {
         document.getElementById("cfg-banner").style.display = "block";
       }
     });
