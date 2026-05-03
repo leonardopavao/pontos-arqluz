@@ -1,123 +1,752 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="pt-BR">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Sistema de Pontos · Arq Luz</title>
-<style>
-/* ── RESET ── */
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --bg1:#0f1117;--bg2:#1a1d2e;
-  --glass:rgba(15,17,23,0.72);
-  --glass-b:rgba(255,255,255,0.14);
-  --card:rgba(255,255,255,0.07);
-  --card-b:rgba(255,255,255,0.13);
-  --text:#f0f2ff;--muted:rgba(240,242,255,0.55);
-  --inp-bg:rgba(255,255,255,0.08);--inp-b:rgba(255,255,255,0.22);
-  --row-b:rgba(255,255,255,0.08);
-  --tab-bg:rgba(255,255,255,0.06);--tab-act:rgba(255,255,255,0.15);
-  --shadow:0 12px 56px rgba(0,0,0,0.65);
-  --green:#3dff8f;--yellow:#facc15;--orange:#fb923c;
-  --red:#ff4f4f;--slate:#94a3b8;
-  --modal-bg:rgba(13,15,23,0.97);
-  --accent:#6c63ff;
-}
-[data-theme="light"]{
-  --glass:rgba(240,242,250,0.82);--glass-b:rgba(0,0,0,0.12);
-  --card:rgba(255,255,255,0.78);--card-b:rgba(0,0,0,0.09);
-  --text:#111827;--muted:rgba(17,24,39,0.52);
-  --inp-bg:rgba(0,0,0,0.04);--inp-b:rgba(0,0,0,0.16);
-  --row-b:rgba(0,0,0,0.06);--tab-bg:rgba(0,0,0,0.05);--tab-act:rgba(0,0,0,0.13);
-  --shadow:0 8px 36px rgba(0,0,0,0.18);--modal-bg:rgba(240,242,250,0.99);
-}
-body{
-  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
-  min-height:100vh;
-  background:
-    linear-gradient(135deg,rgba(10,12,20,0.68) 0%,rgba(20,22,38,0.60) 100%),
-    url('https://img1.wsimg.com/isteam/ip/d6f822d4-fa8b-49c0-9de0-1e295b033915/20241212_082014.jpg/:/rs=w:2320,h:1419')
-    center center/cover fixed;
-  color:var(--text);display:flex;justify-content:center;align-items:flex-start;padding:24px 12px;
-}
-[data-theme="light"] body{
-  background:
-    linear-gradient(135deg,rgba(230,235,245,0.55) 0%,rgba(200,210,230,0.50) 100%),
-    url('https://img1.wsimg.com/isteam/ip/d6f822d4-fa8b-49c0-9de0-1e295b033915/20241212_082014.jpg/:/rs=w:2320,h:1419')
-    center center/cover fixed;
-}
-.shell{width:100%;max-width:1180px;background:var(--glass);border:1px solid var(--glass-b);border-radius:24px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:var(--shadow);overflow:hidden;}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--row-b);gap:10px;flex-wrap:wrap;}
-.topbar-brand{font-size:17px;font-weight:700;letter-spacing:-.3px}
-.topbar-sub{font-size:11px;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
-.topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-#session-timer{display:none;font-size:11px;padding:5px 10px;border-radius:999px;border:1px solid var(--inp-b);color:var(--muted);}
-#session-timer.warn{color:var(--red);border-color:var(--red);animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.chip{font-size:11px;letter-spacing:.6px;padding:5px 10px;border-radius:999px;border:1px solid var(--inp-b);color:var(--muted);}
-.pad{padding:22px}
-.card{background:var(--card);border:1px solid var(--card-b);border-radius:18px;padding:16px;}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-.row{display:flex;gap:14px;flex-wrap:wrap}
-.col{flex:1;min-width:260px}
-@media(max-width:860px){.grid2,.grid3{grid-template-columns:1fr}.grid5{grid-template-columns:1fr 1fr}}
-@media(max-width:480px){.grid5{grid-template-columns:1fr}}
-.label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
-.muted{color:var(--muted)}
-h2,h3{font-weight:600;margin-bottom:12px}
-input,select,textarea{display:block;width:100%;padding:11px 13px;border-radius:12px;border:1px solid var(--inp-b);background:var(--inp-bg);color:var(--text);outline:none;font-size:13px;transition:border-color .2s,box-shadow .2s;margin-top:5px;}
-input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,.18);}
-input::placeholder,textarea::placeholder{color:var(--muted)}
-select option{background:#1a1d2e;color:#fff}
-[data-theme="light"] select option{background:#fff;color:#111}
-.btn{display:inline-block;border:none;cursor:pointer;padding:11px 16px;border-radius:999px;font-weight:600;font-size:13px;transition:transform .15s,opacity .15s;font-family:inherit;}
-.btn:hover{transform:translateY(-2px);opacity:.92}
-.btn:active{transform:translateY(0)}
-.btn-full{width:100%}
-.btn-primary{background:var(--text);color:var(--bg1)}
-.btn-green{background:var(--green);color:#072b14}
-.btn-red{background:var(--red);color:#fff}
-.btn-ghost{background:var(--tab-bg);border:1px solid var(--inp-b);color:var(--text)}
-.btn-accent{background:var(--accent);color:#fff}
-.btn-sm{padding:6px 11px;border-radius:10px;font-size:11px}
-.theme-btn{background:none;border:1px solid var(--inp-b);color:var(--text);border-radius:999px;padding:5px 11px;cursor:pointer;font-size:14px;transition:.2s;font-family:inherit;}
-.theme-btn:hover{background:var(--tab-act)}
-.t-wrap{overflow-x:auto;border-radius:14px}
-table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--card-b);border-radius:14px;overflow:hidden;font-size:12px;}
-th,td{padding:9px 11px;border-bottom:1px solid var(--row-b);text-align:left;vertical-align:middle}
-th{color:var(--muted);font-weight:600;cursor:pointer;user-select:none;white-space:nowrap}
-th:hover{color:var(--text)}
-tr:last-child td{border-bottom:none}
-.t-actions{white-space:nowrap}
-.tabs{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
-.tab{padding:8px 13px;border-radius:999px;cursor:pointer;border:1px solid var(--inp-b);background:var(--tab-bg);font-weight:600;font-size:12px;color:var(--muted);user-select:none;transition:.18s;}
-.tab.active{color:var(--text);background:var(--tab-act);border-color:var(--glass-b)}
-.skel{background:linear-gradient(90deg,var(--card) 25%,var(--tab-act) 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:10px;}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.prog-bar{width:100%;background:var(--tab-bg);border-radius:999px;height:7px;margin-top:6px;overflow:hidden}
-.prog-fill{height:100%;border-radius:999px;transition:width .7s;background:var(--green)}
-#toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
-.toast{padding:12px 18px;border-radius:14px;font-size:13px;font-weight:600;backdrop-filter:blur(12px);max-width:300px;animation:toastIn .3s ease;}
-.toast-ok{background:rgba(61,255,143,.15);border:1px solid var(--green);color:var(--green)}
-.toast-err{background:rgba(255,79,79,.15);border:1px solid var(--red);color:var(--red)}
-.toast-info{background:rgba(250,204,21,.15);border:1px solid var(--yellow);color:var(--yellow)}
-@keyframes toastIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:999;align-items:center;justify-content:center;padding:16px;}
-.modal-box{background:var(--modal-bg);border:1px solid var(--glass-b);border-radius:22px;max-width:500px;width:100%;padding:26px;max-height:90vh;overflow-y:auto;}
-.caixa-card{background:var(--card);border:1px solid var(--card-b);border-radius:14px;padding:14px;text-align:center;}
-.caixa-pts{font-size:26px;font-weight:700;color:var(--yellow);margin-top:4px}
-.caixa-arqs{font-size:11px;color:var(--muted);margin-top:3px}
-.saldo-check{font-size:12px;min-height:16px;margin-top:4px}
-.filtro-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}
-.filtro-row input[type=date],.filtro-row select{width:auto;flex:1;min-width:130px;margin-top:0}
-.err-msg{color:var(--red);font-size:12px;margin-top:6px}
-.ok-msg{color:var(--green);font-size:12px;margin-top:6px}
-.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet"/>
 
-/* Config URL banner */
-#cfg-banner{display:none;padding:10px 22px;background:rgba(250,204,21,.12);border-bottom:1px solid rgba(250,204,21,.3);font-size:12px;color:var(--yellow);text-align:center;}
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { font-family: 'DM Sans', sans-serif; }
+
+/* ── OBSIDIAN theme ── */
+.theme-obsidian {
+  --bg:        #0a0b0e;
+  --bg2:       #111318;
+  --bg3:       #181a20;
+  --surface:   #1c1f27;
+  --surface2:  #242731;
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.12);
+  --text:      #e8eaf0;
+  --text2:     #8a8fa8;
+  --text3:     #555a70;
+  --accent:    #c9a96e;
+  --accent2:   #e2c68e;
+  --green:     #4ade80;
+  --yellow:    #fbbf24;
+  --orange:    #fb923c;
+  --red:       #f87171;
+  --inp-bg:    rgba(255,255,255,0.04);
+  --inp-b:     rgba(255,255,255,0.1);
+  --shadow:    0 24px 80px rgba(0,0,0,0.8);
+  --font-head: 'DM Serif Display', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --radius:    12px;
+  --tab-r:     999px;
+}
+
+/* ── MINERAL theme ── */
+.theme-mineral {
+  --bg:        #13100e;
+  --bg2:       #1a1512;
+  --bg3:       #211b17;
+  --surface:   #271f1b;
+  --surface2:  #2f2622;
+  --border:    rgba(210,175,140,0.1);
+  --border2:   rgba(210,175,140,0.18);
+  --text:      #ede0d4;
+  --text2:     #a08070;
+  --text3:     #6a5548;
+  --accent:    #d4956a;
+  --accent2:   #e8b08a;
+  --green:     #86c984;
+  --yellow:    #e8c96a;
+  --orange:    #e8945a;
+  --red:       #e06b6b;
+  --inp-bg:    rgba(210,175,140,0.05);
+  --inp-b:     rgba(210,175,140,0.15);
+  --shadow:    0 24px 80px rgba(0,0,0,0.7);
+  --font-head: 'Cormorant Garamond', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --radius:    6px;
+  --tab-r:     4px;
+}
+
+/* ── BLUEPRINT theme ── */
+.theme-blueprint {
+  --bg:        #040d1a;
+  --bg2:       #071425;
+  --bg3:       #0a1b30;
+  --surface:   #0d2040;
+  --surface2:  #102540;
+  --border:    rgba(100,180,255,0.1);
+  --border2:   rgba(100,180,255,0.2);
+  --text:      #c8e4ff;
+  --text2:     #6a9fc0;
+  --text3:     #3a5f80;
+  --accent:    #4ab8ff;
+  --accent2:   #7dd0ff;
+  --green:     #5ae0a0;
+  --yellow:    #ffe066;
+  --orange:    #ff9f5a;
+  --red:       #ff6b6b;
+  --inp-bg:    rgba(100,180,255,0.05);
+  --inp-b:     rgba(100,180,255,0.15);
+  --shadow:    0 24px 80px rgba(0,0,0,0.85);
+  --font-head: 'Space Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --radius:    2px;
+  --tab-r:     2px;
+}
+
+/* ── CHAMPAGNE theme ── */
+.theme-champagne {
+  --bg:        #f5f0ea;
+  --bg2:       #ede6dc;
+  --bg3:       #e5dcd0;
+  --surface:   #faf7f2;
+  --surface2:  #f0ebe2;
+  --border:    rgba(100,70,40,0.1);
+  --border2:   rgba(100,70,40,0.16);
+  --text:      #2a1f14;
+  --text2:     #7a6555;
+  --text3:     #a89580;
+  --accent:    #8b6f47;
+  --accent2:   #a8894e;
+  --green:     #2d8a50;
+  --yellow:    #c0830a;
+  --orange:    #c05a20;
+  --red:       #c03030;
+  --inp-bg:    rgba(100,70,40,0.04);
+  --inp-b:     rgba(100,70,40,0.14);
+  --shadow:    0 16px 60px rgba(80,50,20,0.15);
+  --font-head: 'Cormorant Garamond', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+  --radius:    10px;
+  --tab-r:     999px;
+}
+
+/* ── GLOBAL LAYOUT ── */
+#app-root {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  transition: background 0.4s, color 0.4s;
+}
+
+/* BG textures */
+.theme-obsidian #app-root {
+  background-image:
+    linear-gradient(135deg, rgba(8,9,14,0.88) 0%, rgba(14,16,26,0.82) 100%),
+    url('https://img1.wsimg.com/isteam/ip/d6f822d4-fa8b-49c0-9de0-1e295b033915/20241212_082014.jpg/:/rs=w:2320,h:1419');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.theme-mineral #app-root {
+  background-image:
+    linear-gradient(135deg, rgba(10,8,6,0.90) 0%, rgba(22,16,12,0.85) 100%),
+    url('https://img1.wsimg.com/isteam/ip/d6f822d4-fa8b-49c0-9de0-1e295b033915/20241212_082014.jpg/:/rs=w:2320,h:1419');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.theme-mineral #app-root,
+.theme-blueprint #app-root {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+.theme-blueprint #app-root {
+  background-image:
+    linear-gradient(rgba(74,184,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74,184,255,0.03) 1px, transparent 1px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");
+  background-size: 40px 40px, 40px 40px, 400px 400px;
+}
+
+/* SHELL */
+.shell {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+}
+
+/* Glass shell para temas com foto de fundo */
+.theme-obsidian .shell,
+.theme-mineral .shell {
+  background: rgba(10,11,14,0.72);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 24px;
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  box-shadow: 0 32px 100px rgba(0,0,0,0.7);
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.theme-mineral .shell {
+  background: rgba(13,10,8,0.74);
+  border-color: rgba(210,175,140,0.08);
+}
+
+/* TOPBAR */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 28px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand-block {}
+.brand-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.brand-name {
+  font-family: var(--font-head);
+  font-size: 26px;
+  font-weight: 400;
+  color: var(--text);
+  letter-spacing: -0.5px;
+}
+.theme-blueprint .brand-name { font-size: 20px; letter-spacing: 2px; text-transform: uppercase; }
+
+.topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.chip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 5px 12px;
+  border-radius: var(--tab-r);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  background: var(--surface);
+  white-space: nowrap;
+}
+.chip-accent { border-color: var(--accent); color: var(--accent); }
+
+.timer-chip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 5px 12px;
+  border-radius: var(--tab-r);
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  background: var(--surface);
+}
+.timer-warn { color: var(--red); border-color: var(--red); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+.icon-btn {
+  display: flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  color: var(--text2);
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.18s;
+}
+.icon-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--surface2); }
+
+/* DIVIDER */
+.hairline {
+  height: 1px;
+  background: var(--border);
+  margin-bottom: 32px;
+}
+
+/* STAT CARDS */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  transition: border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.stat-card:hover::before { opacity: 1; }
+.stat-card:hover { border-color: var(--border2); }
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 10px;
+}
+.stat-value {
+  font-family: var(--font-head);
+  font-size: 36px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.theme-blueprint .stat-value { font-size: 28px; letter-spacing: 1px; }
+.v-yellow { color: var(--yellow); }
+.v-green  { color: var(--green); }
+.v-orange { color: var(--orange); }
+.v-slate  { color: var(--text2); }
+.v-accent { color: var(--accent); }
+
+/* SECTION HEADERS */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--font-head);
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: -0.3px;
+}
+.theme-blueprint .section-title {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.section-subtitle {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+
+/* CONTENT GRID */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+@media(max-width:860px) { .grid2, .grid3 { grid-template-columns: 1fr; } }
+
+/* PANELS */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px 24px;
+  transition: border-color 0.2s;
+}
+.panel:hover { border-color: var(--border2); }
+
+/* Glass panels para temas com foto de fundo */
+.theme-obsidian .panel,
+.theme-obsidian .stat-card {
+  background: rgba(22,25,35,0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.panel-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 14px;
+}
+
+/* INPUTS */
+input, select, textarea {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--inp-b);
+  background: var(--inp-bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  margin-top: 6px;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(201,169,110,0.1);
+}
+.theme-blueprint input:focus,
+.theme-blueprint select:focus,
+.theme-blueprint textarea:focus {
+  box-shadow: 0 0 0 3px rgba(74,184,255,0.12);
+}
+input::placeholder, textarea::placeholder { color: var(--text3); }
+select option { background: var(--surface); color: var(--text); }
+
+.field-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  display: block;
+  margin-bottom: -4px;
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: none;
+  cursor: pointer;
+  padding: 10px 20px;
+  border-radius: var(--tab-r);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn-full { width: 100%; }
+.btn-primary {
+  background: var(--accent);
+  color: var(--bg);
+}
+.btn-primary:hover { background: var(--accent2); }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+}
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+.btn-green { background: var(--green); color: #042010; }
+.btn-red   { background: var(--red);   color: #fff; }
+.btn-sm    { padding: 6px 12px; font-size: 10px; }
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+.tab {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  cursor: pointer;
+  color: var(--text3);
+  border-bottom: 2px solid transparent;
+  transition: all 0.18s;
+  margin-bottom: -1px;
+  white-space: nowrap;
+}
+.tab:hover  { color: var(--text2); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* TABLES */
+.t-wrap { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+th, td {
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border);
+}
+th {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  font-weight: 400;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+th:hover { color: var(--text2); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface2); }
+.t-actions { white-space: nowrap; }
+
+/* BADGE STATUS */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: var(--tab-r);
+}
+.badge-pending { background: rgba(251,191,36,0.12); color: var(--yellow); border: 1px solid rgba(251,191,36,0.25); }
+.badge-ok      { background: rgba(74,222,128,0.12); color: var(--green);  border: 1px solid rgba(74,222,128,0.25); }
+.badge-open    { background: rgba(251,146,60,0.12); color: var(--orange); border: 1px solid rgba(251,146,60,0.25); }
+
+/* PROGRESS BAR */
+.prog-track {
+  height: 4px;
+  background: var(--border2);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.prog-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--accent);
+  transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+
+/* SKELETON */
+.skel {
+  background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius);
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* TOAST */
+#toast-wrap {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+.toast {
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  max-width: 320px;
+  animation: toastIn 0.3s ease;
+  backdrop-filter: blur(12px);
+}
+.toast-ok  { background: rgba(74,222,128,0.15); border: 1px solid var(--green);  color: var(--green); }
+.toast-err { background: rgba(248,113,113,0.15); border: 1px solid var(--red);   color: var(--red); }
+.toast-info{ background: rgba(251,191,36,0.15);  border: 1px solid var(--yellow); color: var(--yellow); }
+@keyframes toastIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+/* MODAL */
+#modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(4px);
+}
+.modal-box {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  max-width: 520px;
+  width: 100%;
+  padding: 32px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-title {
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 400;
+  margin-bottom: 24px;
+}
+
+/* CAIXA CARDS */
+.caixa-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+.caixa-card:hover { border-color: var(--accent); }
+.caixa-month {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 8px;
+}
+.caixa-pts {
+  font-family: var(--font-head);
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--yellow);
+  letter-spacing: -1px;
+}
+.caixa-arqs { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+/* FILTER ROW */
+.filter-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 18px;
+}
+.filter-row input[type=date],
+.filter-row select { width: auto; flex: 1; min-width: 130px; margin-top: 0; }
+
+.muted { color: var(--text2); }
+.err-msg { font-size: 12px; color: var(--red); margin-top: 8px; font-family: var(--font-mono); }
+.ok-msg  { font-size: 12px; color: var(--green); margin-top: 8px; font-family: var(--font-mono); }
+
+/* LOGIN SCREEN */
+.login-wrap {
+  max-width: 400px;
+  margin: 80px auto 0;
+}
+.login-logo {
+  font-family: var(--font-head);
+  font-size: 48px;
+  font-weight: 400;
+  letter-spacing: -2px;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+.theme-blueprint .login-logo { font-family: var(--font-mono); font-size: 28px; letter-spacing: 4px; }
+.login-tagline {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 48px;
+}
+.login-title {
+  font-family: var(--font-head);
+  font-size: 24px;
+  font-weight: 400;
+  margin-bottom: 6px;
+}
+.login-sub {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 28px;
+}
+
+/* USER HEADER */
+.user-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.user-greeting {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+.user-name {
+  font-family: var(--font-head);
+  font-size: 28px;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+}
+.user-role {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+  margin-top: 2px;
+}
+
+/* LEVEL BADGE */
+.level-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border2);
+  background: var(--surface);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--accent);
+}
+
+/* SALDO CHECK */
+.saldo-check {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  min-height: 18px;
+  margin-top: 6px;
+}
+
+/* SEPARATOR LINE */
+.sep {
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+  opacity: 0.25;
+  margin: 28px 0;
+}
+
+/* RESPONSIVE */
+@media(max-width:600px) {
+  .shell { padding: 16px 14px 40px; }
+  .brand-name { font-size: 20px; }
+  .stat-value { font-size: 28px; }
+}
 </style>
 </head>
 <body>
@@ -126,303 +755,463 @@ tr:last-child td{border-bottom:none}
 
 <div id="modal-overlay" onclick="closeModalOverlay(event)">
   <div class="modal-box">
-    <h3 id="modal-titulo" style="margin-bottom:18px">Modal</h3>
+    <div class="modal-title" id="modal-titulo">Modal</div>
     <div id="modal-content"></div>
-    <div style="display:flex;gap:10px;margin-top:20px">
-      <button class="btn btn-accent btn-full" onclick="modalConfirmar()">Confirmar</button>
-      <button class="btn btn-ghost btn-full" onclick="closeModal()">Cancelar</button>
+    <div style="display:flex;gap:10px;margin-top:24px">
+      <button class="btn btn-primary btn-full" onclick="modalConfirmar()">Confirmar</button>
+      <button class="btn btn-ghost btn-full"   onclick="closeModal()">Cancelar</button>
     </div>
     <div class="err-msg" id="modal-erro"></div>
   </div>
 </div>
 
+<!-- THEME WRAPPER -->
+<div id="theme-wrapper" class="theme-obsidian">
+<div id="app-root">
 <div class="shell">
-  
 
+  <!-- TOPBAR -->
   <div class="topbar">
-    <div>
-      <div class="topbar-sub">Portal</div>
-      <div class="topbar-brand">🏆 Sistema de Pontos · Arq Luz</div>
+    <div class="brand-block">
+      <div class="brand-eyebrow">Portal</div>
+      <div class="brand-name">Arq Luz</div>
     </div>
     <div class="topbar-right">
-      <span id="session-timer">⏱ --:--</span>
-      <span class="chip" id="chip-role">Desconectado</span>
-      <button class="theme-btn" onclick="toggleTema()">🌙</button>
+      <span id="session-timer" style="display:none" class="timer-chip">--:--</span>
+      <span class="chip chip-accent" id="chip-role">Desconectado</span>
+      <button class="icon-btn" onclick="toggleTema()" id="theme-toggle-btn" title="Alternar tema">☾</button>
     </div>
   </div>
+  <div class="hairline"></div>
 
-  <!-- LOGIN -->
-  <div class="pad" id="view-login">
-    <div style="max-width:400px;margin:0 auto;padding:20px 0">
-      <h2 style="margin-bottom:6px">Acesso Restrito</h2>
-      <p class="muted" style="font-size:13px;margin-bottom:20px">Entre com seu usuário e senha para continuar.</p>
+  <!-- ═══ LOGIN ═══ -->
+  <div id="view-login">
+    <div class="login-wrap">
+      <div class="login-logo">Arq Luz</div>
+      <div class="login-tagline">Sistema de Pontos</div>
+      <div class="login-title">Acesso Restrito</div>
+      <div class="login-sub">Entre com seu usuário e senha para continuar.</div>
+
       <div>
-        <div class="label">Usuário</div>
-        <input id="l-user" type="text" placeholder="login" onkeydown="if(event.key==='Enter')$('l-pass').focus()"/>
+        <span class="field-label">Usuário</span>
+        <input id="l-user" type="text" placeholder="login" onkeydown="if(event.key==='Enter')document.getElementById('l-pass').focus()"/>
       </div>
-      <div style="margin-top:12px">
-        <div class="label">Senha</div>
+      <div style="margin-top:14px">
+        <span class="field-label">Senha</span>
         <input id="l-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')entrar()"/>
       </div>
-      <button class="btn btn-primary btn-full" style="margin-top:18px" onclick="entrar()">Entrar</button>
+      <button class="btn btn-primary btn-full" style="margin-top:20px" onclick="entrar()">Entrar →</button>
       <div class="err-msg" id="l-erro"></div>
-      <div id="l-loader" style="display:none;margin-top:10px">
-        <div class="skel" style="height:6px;width:70%;margin:0 auto"></div>
+      <div id="l-loader" style="display:none;margin-top:12px">
+        <div class="skel" style="height:4px;width:100%"></div>
       </div>
     </div>
   </div>
 
-  <!-- APP -->
-  <div class="pad" id="view-app" style="display:none">
+  <!-- ═══ APP ═══ -->
+  <div id="view-app" style="display:none">
 
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px">
+    <!-- USER HEADER -->
+    <div class="user-header">
       <div>
-        <div class="muted" style="font-size:11px">Logado como</div>
-        <h2 style="margin:2px 0 0" id="u-nome">---</h2>
-        <div class="muted" style="font-size:12px" id="u-role">---</div>
+        <div class="user-greeting">Bem-vindo de volta</div>
+        <div class="user-name" id="u-nome">---</div>
+        <div class="user-role" id="u-role">---</div>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn btn-ghost btn-sm" onclick="recarregar()">↻ Atualizar</button>
-        <button class="btn btn-ghost btn-sm" onclick="abrirModalSenha()">🔑 Senha</button>
-        <button class="btn btn-ghost btn-sm" onclick="logout()">Sair →</button>
+        <button class="btn btn-ghost btn-sm" onclick="abrirModalSenha()">Senha</button>
+        <button class="btn btn-ghost btn-sm" onclick="logout()">Sair</button>
       </div>
     </div>
 
-    <!-- ÁREA ARQUITETO -->
+    <!-- ═ ÁREA ARQUITETO ═ -->
     <div id="area-arq" style="display:none">
+
       <div id="skel-arq" style="display:none">
         <div class="skel" style="height:100px;margin-bottom:12px"></div>
         <div class="skel" style="height:60px;margin-bottom:8px"></div>
         <div class="skel" style="height:60px"></div>
       </div>
+
       <div id="content-arq">
-        <div class="grid2" style="margin-bottom:18px">
-          <div class="card">
-            <div class="label">Saldo Disponível</div>
-            <div style="font-size:42px;font-weight:700;color:var(--green);margin-top:4px" id="arq-saldo">0</div>
-            <div style="font-size:12px;color:var(--muted)">pontos</div>
-            <div style="margin-top:8px;font-size:13px">
-              <span class="muted">A liberar </span><span style="color:var(--yellow)" id="arq-pend">0</span>
-              &nbsp;&nbsp;
-              <span class="muted">Em resgate </span><span style="color:var(--orange)" id="arq-reserv">0</span>
+
+        <!-- SALDO + RESGATE -->
+        <div class="grid2" style="margin-bottom:32px">
+          <div class="panel">
+            <div class="panel-label">Saldo Disponível</div>
+            <div style="font-family:var(--font-head);font-size:56px;font-weight:400;color:var(--green);letter-spacing:-2px;line-height:1" id="arq-saldo">0</div>
+            <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3);margin-top:4px">PONTOS</div>
+            <div class="sep"></div>
+            <div style="display:flex;gap:20px;font-size:12px">
+              <div>
+                <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:2px">A Liberar</div>
+                <div style="color:var(--yellow);font-family:var(--font-mono);font-size:14px" id="arq-pend">0</div>
+              </div>
+              <div>
+                <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Em Resgate</div>
+                <div style="color:var(--orange);font-family:var(--font-mono);font-size:14px" id="arq-reserv">0</div>
+              </div>
             </div>
           </div>
-          <div class="card">
-            <div class="label">Solicitar Resgate</div>
-            <input id="arq-r-pts" type="number" min="1" placeholder="Quantos pontos?" style="margin-top:8px" oninput="checkSaldo(this.value)"/>
+          <div class="panel">
+            <div class="panel-label">Solicitar Resgate</div>
+            <span class="field-label">Pontos</span>
+            <input id="arq-r-pts" type="number" min="1" placeholder="Quantos pontos?" oninput="checkSaldo(this.value)"/>
             <div class="saldo-check" id="arq-saldo-check"></div>
-            <textarea id="arq-r-det" placeholder="Detalhes opcionais..." rows="3" style="margin-top:8px;resize:vertical"></textarea>
-            <button class="btn btn-green btn-full" style="margin-top:10px" onclick="solicitarResgate()">Solicitar →</button>
+            <span class="field-label" style="margin-top:12px">Detalhes (opcional)</span>
+            <textarea id="arq-r-det" rows="3" placeholder="Descreva sua preferência de resgate..." style="resize:vertical"></textarea>
+            <button class="btn btn-primary btn-full" style="margin-top:14px" onclick="solicitarResgate()">Solicitar Resgate →</button>
             <div class="err-msg" id="arq-erro"></div>
           </div>
         </div>
 
-        <div id="arq-meta-wrap" style="display:none;margin-bottom:18px">
-          <div class="card">
-            <div class="label">Meta do Mês</div>
-            <div style="display:flex;align-items:center;gap:16px;margin-top:8px;flex-wrap:wrap">
+        <!-- META -->
+        <div id="arq-meta-wrap" style="display:none;margin-bottom:32px">
+          <div class="panel">
+            <div class="panel-label">Meta do Mês</div>
+            <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
               <div>
-                <span style="font-size:26px;font-weight:700;color:var(--green)" id="arq-meta-mes">0</span>
-                <span class="muted"> / </span>
-                <span style="font-size:18px;font-weight:600" id="arq-meta-alvo">0</span>
-                <span class="muted" style="font-size:12px"> pts</span>
+                <span style="font-family:var(--font-head);font-size:32px;font-weight:400;color:var(--accent)" id="arq-meta-mes">0</span>
+                <span style="color:var(--text3);font-size:14px"> / </span>
+                <span style="font-family:var(--font-head);font-size:22px;font-weight:400;color:var(--text2)" id="arq-meta-alvo">0</span>
+                <span style="font-family:var(--font-mono);font-size:9px;letter-spacing:2px;color:var(--text3)"> PTS</span>
               </div>
               <div style="flex:1;min-width:160px">
-                <div class="prog-bar"><div class="prog-fill" id="arq-meta-prog" style="width:0%;background:var(--yellow)"></div></div>
-                <div style="font-size:11px;color:var(--muted);margin-top:3px" id="arq-meta-label"></div>
+                <div class="prog-track"><div class="prog-fill" id="arq-meta-prog" style="width:0%"></div></div>
+                <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:6px" id="arq-meta-label"></div>
               </div>
             </div>
           </div>
         </div>
 
-        <div style="margin-bottom:18px">
-          <h3>Pontos a Liberar</h3>
-          <div class="t-wrap"><table>
-            <thead><tr><th onclick="sortTb('tb-arp',0)">Cliente ⇅</th><th onclick="sortTb('tb-arp',1)">Data ⇅</th><th onclick="sortTb('tb-arp',2)">Pontos ⇅</th><th onclick="sortTb('tb-arp',3)">Previsão ⇅</th></tr></thead>
-            <tbody id="tb-arp"><tr><td colspan="4" class="muted">—</td></tr></tbody>
-          </table></div>
+        <!-- TABELAS ARQ -->
+        <div style="margin-bottom:28px">
+          <div class="section-header">
+            <div class="section-title">Pontos a Liberar</div>
+          </div>
+          <div class="t-wrap panel" style="padding:0">
+            <table>
+              <thead><tr>
+                <th onclick="sortTb('tb-arp',0)">Cliente</th>
+                <th onclick="sortTb('tb-arp',1)">Data</th>
+                <th onclick="sortTb('tb-arp',2)">Pontos</th>
+                <th onclick="sortTb('tb-arp',3)">Previsão</th>
+              </tr></thead>
+              <tbody id="tb-arp"><tr><td colspan="4" class="muted" style="font-size:12px;padding:20px">—</td></tr></tbody>
+            </table>
+          </div>
         </div>
-        <div style="margin-bottom:18px">
-          <h3>Pontos Liberados</h3>
-          <div class="t-wrap"><table>
-            <thead><tr><th onclick="sortTb('tb-arl',0)">Cliente ⇅</th><th onclick="sortTb('tb-arl',1)">Data ⇅</th><th onclick="sortTb('tb-arl',2)">Pontos ⇅</th><th onclick="sortTb('tb-arl',3)">Liberação ⇅</th></tr></thead>
-            <tbody id="tb-arl"><tr><td colspan="4" class="muted">—</td></tr></tbody>
-          </table></div>
+
+        <div style="margin-bottom:28px">
+          <div class="section-header">
+            <div class="section-title">Pontos Liberados</div>
+          </div>
+          <div class="t-wrap panel" style="padding:0">
+            <table>
+              <thead><tr>
+                <th onclick="sortTb('tb-arl',0)">Cliente</th>
+                <th onclick="sortTb('tb-arl',1)">Data</th>
+                <th onclick="sortTb('tb-arl',2)">Pontos</th>
+                <th onclick="sortTb('tb-arl',3)">Liberação</th>
+              </tr></thead>
+              <tbody id="tb-arl"><tr><td colspan="4" class="muted" style="font-size:12px;padding:20px">—</td></tr></tbody>
+            </table>
+          </div>
         </div>
+
         <div class="grid2">
           <div>
-            <h3>Resgates em Aberto</h3>
-            <div class="t-wrap"><table>
-              <thead><tr><th onclick="sortTb('tb-arra',0)">Data ⇅</th><th onclick="sortTb('tb-arra',1)">Pontos ⇅</th><th>Detalhes</th></tr></thead>
-              <tbody id="tb-arra"><tr><td colspan="3" class="muted">—</td></tr></tbody>
-            </table></div>
+            <div class="section-header"><div class="section-title">Resgates em Aberto</div></div>
+            <div class="t-wrap panel" style="padding:0">
+              <table>
+                <thead><tr>
+                  <th onclick="sortTb('tb-arra',0)">Data</th>
+                  <th onclick="sortTb('tb-arra',1)">Pontos</th>
+                  <th>Detalhes</th>
+                </tr></thead>
+                <tbody id="tb-arra"><tr><td colspan="3" class="muted" style="font-size:12px;padding:20px">—</td></tr></tbody>
+              </table>
+            </div>
           </div>
           <div>
-            <h3>Resgates Concluídos</h3>
-            <div class="t-wrap"><table>
-              <thead><tr><th onclick="sortTb('tb-arrc',0)">Data ⇅</th><th onclick="sortTb('tb-arrc',1)">Pontos ⇅</th><th>Detalhes</th></tr></thead>
-              <tbody id="tb-arrc"><tr><td colspan="3" class="muted">—</td></tr></tbody>
-            </table></div>
+            <div class="section-header"><div class="section-title">Resgates Concluídos</div></div>
+            <div class="t-wrap panel" style="padding:0">
+              <table>
+                <thead><tr>
+                  <th onclick="sortTb('tb-arrc',0)">Data</th>
+                  <th onclick="sortTb('tb-arrc',1)">Pontos</th>
+                  <th>Detalhes</th>
+                </tr></thead>
+                <tbody id="tb-arrc"><tr><td colspan="3" class="muted" style="font-size:12px;padding:20px">—</td></tr></tbody>
+              </table>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- ÁREA ADMIN -->
+      </div><!-- /content-arq -->
+    </div><!-- /area-arq -->
+
+
+    <!-- ═ ÁREA ADMIN ═ -->
     <div id="area-adm" style="display:none">
 
-      <div class="grid5" style="margin-bottom:18px">
-        <div class="card" style="text-align:center"><div class="label" style="font-size:10px">A liberar</div><div style="font-size:26px;font-weight:700;color:var(--yellow);margin-top:6px" id="s-pend">—</div></div>
-        <div class="card" style="text-align:center"><div class="label" style="font-size:10px">Total liberado</div><div style="font-size:26px;font-weight:700;color:var(--green);margin-top:6px" id="s-lib">—</div></div>
-        <div class="card" style="text-align:center"><div class="label" style="font-size:10px">Saldo disponível</div><div style="font-size:26px;font-weight:700;color:var(--green);margin-top:6px" id="s-saldo">—</div></div>
-        <div class="card" style="text-align:center"><div class="label" style="font-size:10px">Em resgate</div><div style="font-size:26px;font-weight:700;color:var(--orange);margin-top:6px" id="s-reserv">—</div></div>
-        <div class="card" style="text-align:center"><div class="label" style="font-size:10px">Resgatado</div><div style="font-size:26px;font-weight:700;color:var(--slate);margin-top:6px" id="s-resg">—</div></div>
+      <!-- SUMMARY STATS -->
+      <div class="stats-row" style="margin-bottom:32px">
+        <div class="stat-card">
+          <div class="stat-label">A Liberar</div>
+          <div class="stat-value v-yellow" id="s-pend">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Liberado</div>
+          <div class="stat-value v-green" id="s-lib">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Saldo Disponível</div>
+          <div class="stat-value v-green" id="s-saldo">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Em Resgate</div>
+          <div class="stat-value v-orange" id="s-reserv">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Resgatado</div>
+          <div class="stat-value v-slate" id="s-resg">—</div>
+        </div>
       </div>
 
-      <div class="row" style="margin-bottom:18px">
-        <div class="col card" style="min-width:220px;max-width:300px">
-          <div class="label">Arquiteto</div>
-          <select id="adm-sel-arq" onchange="admSelArq()" style="margin-top:6px">
-            <option value="">-- selecionar --</option>
+      <!-- LANÇAR PONTOS -->
+      <div class="grid2" style="margin-bottom:32px;align-items:start">
+        <div class="panel">
+          <div class="panel-label">Arquiteto Selecionado</div>
+          <select id="adm-sel-arq" onchange="admSelArq()">
+            <option value="">— selecionar —</option>
           </select>
         </div>
-        <div class="col card">
-          <div class="label" style="margin-bottom:8px">Lançar Pontos</div>
+        <div class="panel">
+          <div class="panel-label">Lançar Pontos</div>
           <div class="grid2" style="gap:10px">
-            <div><div class="label">Venda Interna</div><input id="adm-venda" placeholder="VND-00000"/></div>
-            <div><div class="label">Cliente / Obra</div><input id="adm-cli" placeholder="Nome do cliente"/></div>
-            <div><div class="label">Pontos</div><input id="adm-pts" type="number" min="1" placeholder="Ex: 200"/></div>
-            <div><div class="label">Previsão de Liberação</div><input id="adm-prev" type="date"/></div>
+            <div>
+              <span class="field-label">Venda Interna</span>
+              <input id="adm-venda" placeholder="VND-00000"/>
+            </div>
+            <div>
+              <span class="field-label">Cliente / Obra</span>
+              <input id="adm-cli" placeholder="Nome do cliente"/>
+            </div>
+            <div>
+              <span class="field-label">Pontos</span>
+              <input id="adm-pts" type="number" min="1" placeholder="Ex: 200"/>
+            </div>
+            <div>
+              <span class="field-label">Previsão de Liberação</span>
+              <input id="adm-prev" type="date"/>
+            </div>
           </div>
-          <div style="margin-top:8px"><div class="label">Observação (interna)</div><input id="adm-obs" placeholder="Nota interna — não visível ao arquiteto"/></div>
-          <button class="btn btn-primary btn-full" style="margin-top:12px" onclick="admLancar()">Lançar Pontos →</button>
+          <div style="margin-top:10px">
+            <span class="field-label">Observação (interna)</span>
+            <input id="adm-obs" placeholder="Nota interna — não visível ao arquiteto"/>
+          </div>
+          <button class="btn btn-primary btn-full" style="margin-top:14px" onclick="admLancar()">Lançar Pontos →</button>
           <div class="err-msg" id="adm-err"></div>
         </div>
       </div>
 
+      <!-- TABS -->
       <div class="tabs">
-        <div class="tab active" id="t-visao" onclick="setTab('visao')">Visão Arquiteto</div>
-        <div class="tab" id="t-pag"   onclick="setTab('pag')">Pagamentos</div>
-        <div class="tab" id="t-resg"  onclick="setTab('resg')">Resgates</div>
-        <div class="tab" id="t-caixa" onclick="setTab('caixa')">Previsão de Caixa</div>
-        <div class="tab" id="t-rel"   onclick="setTab('rel')">Relatório</div>
-        <div class="tab" id="t-hist"  onclick="setTab('hist')">Histórico</div>
-        <div class="tab" id="t-senha" onclick="setTab('senha')">Senhas</div>
+        <div class="tab active" id="t-visao"  onclick="setTab('visao')">Visão Arquiteto</div>
+        <div class="tab"        id="t-pag"    onclick="setTab('pag')">Pagamentos</div>
+        <div class="tab"        id="t-resg"   onclick="setTab('resg')">Resgates</div>
+        <div class="tab"        id="t-caixa"  onclick="setTab('caixa')">Caixa</div>
+        <div class="tab"        id="t-rel"    onclick="setTab('rel')">Relatório</div>
+        <div class="tab"        id="t-hist"   onclick="setTab('hist')">Histórico</div>
+        <div class="tab"        id="t-senha"  onclick="setTab('senha')">Senhas</div>
       </div>
 
       <!-- TAB VISÃO -->
-      <div id="tab-visao" style="margin-top:14px">
-        <div class="filtro-row">
-          <div><div class="label">De</div><input type="date" id="vd-de" onchange="applyVisaoFilter()"/></div>
-          <div><div class="label">Até</div><input type="date" id="vd-ate" onchange="applyVisaoFilter()"/></div>
+      <div id="tab-visao">
+        <div class="filter-row">
+          <div><span class="field-label">De</span><input type="date" id="vd-de" onchange="applyVisaoFilter()"/></div>
+          <div><span class="field-label">Até</span><input type="date" id="vd-ate" onchange="applyVisaoFilter()"/></div>
           <button class="btn btn-ghost btn-sm" style="margin-top:auto" onclick="clearVisaoFilter()">✕ Limpar</button>
         </div>
-        <div style="margin-bottom:14px">
-          <h3>A Liberar</h3>
-          <div class="t-wrap"><table>
-            <thead><tr><th onclick="sortTb('tb-adp',0)">Cliente ⇅</th><th onclick="sortTb('tb-adp',1)">Data ⇅</th><th onclick="sortTb('tb-adp',2)">Pontos ⇅</th><th onclick="sortTb('tb-adp',3)">Previsão ⇅</th><th>Obs</th><th class="t-actions">Ações</th></tr></thead>
-            <tbody id="tb-adp"><tr><td colspan="6" class="muted">Selecione um arquiteto.</td></tr></tbody>
-          </table></div>
+        <div style="margin-bottom:22px">
+          <div class="section-header"><div class="section-title">A Liberar</div></div>
+          <div class="t-wrap panel" style="padding:0">
+            <table>
+              <thead><tr>
+                <th onclick="sortTb('tb-adp',0)">Cliente</th>
+                <th onclick="sortTb('tb-adp',1)">Data</th>
+                <th onclick="sortTb('tb-adp',2)">Pontos</th>
+                <th onclick="sortTb('tb-adp',3)">Previsão</th>
+                <th>Obs</th>
+                <th class="t-actions">Ações</th>
+              </tr></thead>
+              <tbody id="tb-adp"><tr><td colspan="6" class="muted" style="font-size:12px;padding:20px">Selecione um arquiteto.</td></tr></tbody>
+            </table>
+          </div>
         </div>
         <div>
-          <h3>Liberados</h3>
-          <div class="t-wrap"><table>
-            <thead><tr><th onclick="sortTb('tb-adl',0)">Cliente ⇅</th><th onclick="sortTb('tb-adl',1)">Data ⇅</th><th onclick="sortTb('tb-adl',2)">Pontos ⇅</th><th onclick="sortTb('tb-adl',3)">Liberação ⇅</th><th>Obs</th><th class="t-actions">Ações</th></tr></thead>
-            <tbody id="tb-adl"><tr><td colspan="6" class="muted">Selecione um arquiteto.</td></tr></tbody>
-          </table></div>
+          <div class="section-header"><div class="section-title">Liberados</div></div>
+          <div class="t-wrap panel" style="padding:0">
+            <table>
+              <thead><tr>
+                <th onclick="sortTb('tb-adl',0)">Cliente</th>
+                <th onclick="sortTb('tb-adl',1)">Data</th>
+                <th onclick="sortTb('tb-adl',2)">Pontos</th>
+                <th onclick="sortTb('tb-adl',3)">Liberação</th>
+                <th>Obs</th>
+                <th class="t-actions">Ações</th>
+              </tr></thead>
+              <tbody id="tb-adl"><tr><td colspan="6" class="muted" style="font-size:12px;padding:20px">Selecione um arquiteto.</td></tr></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       <!-- TAB PAG -->
-      <div id="tab-pag" style="display:none;margin-top:14px">
-        <div class="filtro-row">
-          <div><div class="label">De</div><input type="date" id="pg-de" onchange="refreshGlobal()"/></div>
-          <div><div class="label">Até</div><input type="date" id="pg-ate" onchange="refreshGlobal()"/></div>
+      <div id="tab-pag" style="display:none">
+        <div class="filter-row">
+          <div><span class="field-label">De</span><input type="date" id="pg-de" onchange="refreshGlobal()"/></div>
+          <div><span class="field-label">Até</span><input type="date" id="pg-ate" onchange="refreshGlobal()"/></div>
           <button class="btn btn-ghost btn-sm" style="margin-top:auto" onclick="clearPagFilter()">✕ Limpar</button>
         </div>
         <div class="grid2">
           <div>
-            <h3>Futuros</h3>
-            <div class="t-wrap"><table>
-              <thead><tr><th onclick="sortTb('tb-fut',0)">Arquiteto ⇅</th><th onclick="sortTb('tb-fut',1)">Cliente ⇅</th><th onclick="sortTb('tb-fut',2)">Pontos ⇅</th><th onclick="sortTb('tb-fut',3)">Previsão ⇅</th><th class="t-actions">Ações</th></tr></thead>
-              <tbody id="tb-fut"><tr><td colspan="5" class="muted">—</td></tr></tbody>
-            </table></div>
+            <div class="section-header"><div class="section-title">Futuros</div></div>
+            <div class="t-wrap panel" style="padding:0">
+              <table>
+                <thead><tr>
+                  <th onclick="sortTb('tb-fut',0)">Arquiteto</th>
+                  <th onclick="sortTb('tb-fut',1)">Cliente</th>
+                  <th onclick="sortTb('tb-fut',2)">Pontos</th>
+                  <th onclick="sortTb('tb-fut',3)">Previsão</th>
+                  <th class="t-actions">Ações</th>
+                </tr></thead>
+                <tbody id="tb-fut"><tr><td colspan="5" class="muted" style="font-size:12px;padding:20px">—</td></tr></tbody>
+              </table>
+            </div>
           </div>
           <div>
-            <h3>Concluídos</h3>
-            <div class="t-wrap"><table>
-              <thead><tr><th onclick="sortTb('tb-don',0)">Arquiteto ⇅</th><th onclick="sortTb('tb-don',1)">Cliente ⇅</th><th onclick="sortTb('tb-don',2)">Pontos ⇅</th><th onclick="sortTb('tb-don',3)">Liberação ⇅</th></tr></thead>
-              <tbody id="tb-don"><tr><td colspan="4" class="muted">—</td></tr></tbody>
-            </table></div>
+            <div class="section-header"><div class="section-title">Concluídos</div></div>
+            <div class="t-wrap panel" style="padding:0">
+              <table>
+                <thead><tr>
+                  <th onclick="sortTb('tb-don',0)">Arquiteto</th>
+                  <th onclick="sortTb('tb-don',1)">Cliente</th>
+                  <th onclick="sortTb('tb-don',2)">Pontos</th>
+                  <th onclick="sortTb('tb-don',3)">Liberação</th>
+                </tr></thead>
+                <tbody id="tb-don"><tr><td colspan="4" class="muted" style="font-size:12px;padding:20px">—</td></tr></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- TAB RESGATES -->
-      <div id="tab-resg" style="display:none;margin-top:14px">
+      <div id="tab-resg" style="display:none">
         <div class="grid2">
           <div>
-            <h3>Em Aberto</h3>
-            <div class="t-wrap"><table>
-              <thead><tr><th onclick="sortTb('tb-roa',0)">Arquiteto ⇅</th><th onclick="sortTb('tb-roa',1)">Data ⇅</th><th onclick="sortTb('tb-roa',2)">Pontos ⇅</th><th>Detalhes</th><th class="t-actions">Ações</th></tr></thead>
-              <tbody id="tb-roa"><tr><td colspan="5" class="muted">—</td></tr></tbody>
-            </table></div>
+            <div class="section-header"><div class="section-title">Em Aberto</div></div>
+            <div class="t-wrap panel" style="padding:0">
+              <table>
+                <thead><tr>
+                  <th onclick="sortTb('tb-roa',0)">Arquiteto</th>
+                  <th onclick="sortTb('tb-roa',1)">Data</th>
+                  <th onclick="sortTb('tb-roa',2)">Pontos</th>
+                  <th>Detalhes</th>
+                  <th class="t-actions">Ações</th>
+                </tr></thead>
+                <tbody id="tb-roa"><tr><td colspan="5" class="muted" style="font-size:12px;padding:20px">—</td></tr></tbody>
+              </table>
+            </div>
           </div>
           <div>
-            <h3>Concluídos</h3>
-            <div class="t-wrap"><table>
-              <thead><tr><th onclick="sortTb('tb-rok',0)">Arquiteto ⇅</th><th onclick="sortTb('tb-rok',1)">Data ⇅</th><th onclick="sortTb('tb-rok',2)">Pontos ⇅</th><th>Detalhes</th></tr></thead>
-              <tbody id="tb-rok"><tr><td colspan="4" class="muted">—</td></tr></tbody>
-            </table></div>
+            <div class="section-header"><div class="section-title">Concluídos</div></div>
+            <div class="t-wrap panel" style="padding:0">
+              <table>
+                <thead><tr>
+                  <th onclick="sortTb('tb-rok',0)">Arquiteto</th>
+                  <th onclick="sortTb('tb-rok',1)">Data</th>
+                  <th onclick="sortTb('tb-rok',2)">Pontos</th>
+                  <th>Detalhes</th>
+                </tr></thead>
+                <tbody id="tb-rok"><tr><td colspan="4" class="muted" style="font-size:12px;padding:20px">—</td></tr></tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
 
       <!-- TAB CAIXA -->
-      <div id="tab-caixa" style="display:none;margin-top:14px">
-        <div class="sec-header">
-          <h3>Previsão de Caixa por Mês</h3>
+      <div id="tab-caixa" style="display:none">
+        <div class="section-header">
+          <div class="section-title">Previsão de Caixa por Mês</div>
           <button class="btn btn-ghost btn-sm" onclick="loadCaixa()">↻ Atualizar</button>
         </div>
-        <div id="caixa-grid" class="grid3"><div class="muted" style="font-size:13px">Clique em Atualizar.</div></div>
+        <div id="caixa-grid" class="grid3">
+          <div class="muted" style="font-size:12px;font-family:var(--font-mono)">Clique em Atualizar.</div>
+        </div>
       </div>
 
       <!-- TAB RELATÓRIO -->
-      <div id="tab-rel" style="display:none;margin-top:14px">
-        <div class="card" style="margin-bottom:14px">
-          <div class="label" style="margin-bottom:8px">Filtros</div>
-          <div class="filtro-row">
-            <div><div class="label">Tipo</div><select id="rel-tipo"><option value="todos">Todos</option><option value="lancamentos">Lançamentos</option><option value="resgates">Resgates</option></select></div>
-            <div><div class="label">Arquiteto</div><select id="rel-arq"><option value="">Todos</option></select></div>
-            <div><div class="label">De</div><input type="date" id="rel-de"/></div>
-            <div><div class="label">Até</div><input type="date" id="rel-ate"/></div>
-            <button class="btn btn-accent btn-sm" style="margin-top:auto" onclick="gerarRel()">Gerar</button>
-            <button class="btn btn-green btn-sm" id="btn-csv" onclick="exportCSV()" style="display:none;margin-top:auto">⬇ CSV</button>
+      <div id="tab-rel" style="display:none">
+        <div class="panel" style="margin-bottom:20px">
+          <div class="panel-label">Filtros</div>
+          <div class="filter-row">
+            <div>
+              <span class="field-label">Tipo</span>
+              <select id="rel-tipo">
+                <option value="todos">Todos</option>
+                <option value="lancamentos">Lançamentos</option>
+                <option value="resgates">Resgates</option>
+              </select>
+            </div>
+            <div>
+              <span class="field-label">Arquiteto</span>
+              <select id="rel-arq"><option value="">Todos</option></select>
+            </div>
+            <div><span class="field-label">De</span><input type="date" id="rel-de"/></div>
+            <div><span class="field-label">Até</span><input type="date" id="rel-ate"/></div>
+            <button class="btn btn-primary btn-sm" style="margin-top:auto" onclick="gerarRel()">Gerar</button>
+            <button class="btn btn-ghost btn-sm" id="btn-csv" style="display:none;margin-top:auto" onclick="exportCSV()">↓ CSV</button>
           </div>
         </div>
-        <div id="rel-result"><div class="muted" style="font-size:13px">Configure e clique em Gerar.</div></div>
+        <div id="rel-result"><div class="muted" style="font-size:12px;font-family:var(--font-mono)">Configure e clique em Gerar.</div></div>
       </div>
 
       <!-- TAB HISTÓRICO -->
-      <div id="tab-hist" style="display:none;margin-top:14px">
-        <div class="sec-header">
-          <h3>Histórico de Ações</h3>
+      <div id="tab-hist" style="display:none">
+        <div class="section-header">
+          <div class="section-title">Histórico de Ações</div>
           <button class="btn btn-ghost btn-sm" onclick="loadHistorico()">↻ Atualizar</button>
         </div>
-        <div class="t-wrap"><table>
-          <thead><tr><th onclick="sortTb('tb-hist',0)">Data ⇅</th><th>Hora</th><th onclick="sortTb('tb-hist',2)">Usuário ⇅</th><th onclick="sortTb('tb-hist',3)">Ação ⇅</th><th>Detalhes</th><th>IP</th><th>Localização</th></tr></thead>
-          <tbody id="tb-hist"><tr><td colspan="7" class="muted">Clique em Atualizar.</td></tr></tbody>
-        </table></div>
+        <div class="t-wrap panel" style="padding:0">
+          <table>
+            <thead><tr>
+              <th onclick="sortTb('tb-hist',0)">Data</th>
+              <th>Hora</th>
+              <th onclick="sortTb('tb-hist',2)">Usuário</th>
+              <th onclick="sortTb('tb-hist',3)">Ação</th>
+              <th>Detalhes</th>
+              <th>IP</th>
+              <th>Localização</th>
+            </tr></thead>
+            <tbody id="tb-hist"><tr><td colspan="7" class="muted" style="font-size:12px;padding:20px">Clique em Atualizar.</td></tr></tbody>
+          </table>
+        </div>
       </div>
 
       <!-- TAB SENHAS -->
-      <div id="tab-senha" style="display:none;margin-top:14px">
-        <div class="card" style="max-width:460px">
-          <div class="label" style="margin-bottom:8px">🔑 Resetar Senha de Arquiteto</div>
-          <p class="muted" style="font-size:12px;margin-bottom:10px">A senha em texto puro ficará visível na coluna SENHA_LEGIVEL da planilha USUARIOS.</p>
-          <select id="sn-user"><option value="">-- selecionar usuário --</option></select>
-          <input type="text" id="sn-nova" placeholder="Nova senha" style="margin-top:10px"/>
-          <button class="btn btn-primary btn-full" style="margin-top:12px" onclick="admResetSenha()">Resetar Senha</button>
+      <div id="tab-senha" style="display:none">
+        <div class="panel" style="max-width:480px">
+          <div class="panel-label">Resetar Senha de Arquiteto</div>
+          <p style="font-size:12px;color:var(--text2);margin-bottom:14px">A senha ficará visível na coluna SENHA_LEGIVEL da planilha USUARIOS.</p>
+          <select id="sn-user"><option value="">— selecionar usuário —</option></select>
+          <span class="field-label" style="margin-top:14px">Nova senha</span>
+          <input type="text" id="sn-nova" placeholder="Nova senha"/>
+          <button class="btn btn-primary btn-full" style="margin-top:14px" onclick="admResetSenha()">Resetar Senha</button>
           <div class="err-msg" id="sn-err"></div>
           <div class="ok-msg"  id="sn-ok"></div>
         </div>
@@ -430,23 +1219,95 @@ tr:last-child td{border-bottom:none}
 
     </div><!-- /area-adm -->
   </div><!-- /view-app -->
-</div><!-- /shell -->
 
+</div><!-- /shell -->
+</div><!-- /app-root -->
+</div><!-- /theme-wrapper -->
+
+<!-- TWEAKS PANEL -->
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "theme": "obsidian",
+  "accentColor": "#c9a96e",
+  "density": "normal",
+  "headerStyle": "serif"
+}/*EDITMODE-END*/;
+
+function TweaksApp() {
+  const [tweaks, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  React.useEffect(() => {
+    if (!tweaks) return;
+    const wrapper = document.getElementById('theme-wrapper');
+    if (wrapper) wrapper.className = 'theme-' + tweaks.theme;
+
+    const root = document.getElementById('app-root');
+    if (!root) return;
+    root.style.setProperty('--accent', tweaks.accentColor);
+    root.style.setProperty('--accent2', tweaks.accentColor);
+
+    const densityMap = { compact: '7px 10px', normal: '10px 14px', spacious: '14px 20px' };
+    document.querySelectorAll('input,select,textarea').forEach(el => {
+      el.style.padding = densityMap[tweaks.density] || densityMap.normal;
+    });
+
+    const fontMap = {
+      serif:   "'DM Serif Display', serif",
+      mono:    "'Space Mono', monospace",
+      elegant: "'Cormorant Garamond', serif"
+    };
+    if (fontMap[tweaks.headerStyle]) {
+      root.style.setProperty('--font-head', fontMap[tweaks.headerStyle]);
+    }
+  }, [tweaks]);
+
+  return (
+    <TweaksPanel>
+      <TweakSection label="Tema Visual" />
+      <TweakRadio
+        label="Estilo"
+        value={tweaks.theme}
+        options={['obsidian', 'mineral', 'blueprint', 'champagne']}
+        onChange={v => setTweak('theme', v)}
+      />
+      <TweakSection label="Cor de Destaque" />
+      <TweakColor
+        label="Accent"
+        value={tweaks.accentColor}
+        onChange={v => setTweak('accentColor', v)}
+      />
+      <TweakSection label="Tipografia" />
+      <TweakRadio
+        label="Títulos"
+        value={tweaks.headerStyle}
+        options={['serif', 'elegant', 'mono']}
+        onChange={v => setTweak('headerStyle', v)}
+      />
+      <TweakSection label="Densidade" />
+      <TweakRadio
+        label="Espaçamento"
+        value={tweaks.density}
+        options={['compact', 'normal', 'spacious']}
+        onChange={v => setTweak('density', v)}
+      />
+    </TweaksPanel>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('tweaks-root')).render(<TweaksApp />);
+</script>
+<div id="tweaks-root"></div>
+
+<!-- ═══ LÓGICA PRINCIPAL ═══ -->
 <script>
-/* ============================================================
-   ⚠️  CONFIGURE AQUI — cole a URL do seu Apps Script deployado
-   Exemplo: https://script.google.com/macros/s/AKfyc.../exec
-   ============================================================ */
 var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxoWCsWI9Qx-mVQPW2uuDOX-HXl4vuX-u_xWlqEplQ84W65aD2UUlfDHDr_FMGzy0X-/exec";
 
-/* ============================================================
-   API — substitui google.script.run com fetch
-   ============================================================ */
 function callScript(action) {
   var params = Array.prototype.slice.call(arguments, 1);
   return fetch(SCRIPT_URL, {
     method: "POST",
-    headers: { "Content-Type": "text/plain" }, // text/plain evita preflight CORS
+    headers: { "Content-Type": "text/plain" },
     body: JSON.stringify({ action: action, params: params })
   })
   .then(function(r) {
@@ -459,66 +1320,63 @@ function callScript(action) {
   });
 }
 
-/* ============================================================
-   STATE
-   ============================================================ */
 var S = { token: null, user: null, alvo: null, expiresAt: null };
 var _cache = {}, _mModal = null, _idModal = null, _relRows = [], _sortSt = {};
 var _pendBuf = [], _libBuf = [], _ticker = null;
 
-/* ============================================================
-   TEMA
-   ============================================================ */
+// TEMA CYCLE
+var _themes = ['obsidian','mineral','blueprint','champagne'];
+var _themeIcons = { obsidian:'☾', mineral:'◈', blueprint:'⬡', champagne:'◇' };
+var _themeIdx = 0;
+
 function toggleTema() {
-  var html = document.documentElement;
-  var dark = html.getAttribute("data-theme") === "dark";
-  html.setAttribute("data-theme", dark ? "light" : "dark");
-  document.querySelector(".theme-btn").textContent = dark ? "☀️" : "🌙";
-  try { localStorage.setItem("_tema", dark ? "light" : "dark"); } catch(e) {}
+  _themeIdx = (_themeIdx + 1) % _themes.length;
+  var t = _themes[_themeIdx];
+  document.getElementById('theme-wrapper').className = 'theme-' + t;
+  document.getElementById('theme-toggle-btn').textContent = _themeIcons[t] || '◈';
+  try { localStorage.setItem('_tema2', t); } catch(e) {}
 }
-(function() {
+
+(function(){
   try {
-    var t = localStorage.getItem("_tema") || "dark";
-    document.documentElement.setAttribute("data-theme", t);
-    document.addEventListener("DOMContentLoaded", function() {
-      document.querySelector(".theme-btn").textContent = t === "dark" ? "🌙" : "☀️";
-      // Mostra banner se URL não foi configurada
-      if (SCRIPT_URL === "https://script.google.com/macros/s/AKfycbxoWCsWI9Qx-mVQPW2uuDOX-HXl4vuX-u_xWlqEplQ84W65aD2UUlfDHDr_FMGzy0X-/exec") {
-        document.getElementById("cfg-banner").style.display = "block";
-      }
-    });
+    var saved = localStorage.getItem('_tema2');
+    if (saved && _themes.indexOf(saved) >= 0) {
+      _themeIdx = _themes.indexOf(saved);
+      document.getElementById('theme-wrapper').className = 'theme-' + saved;
+      document.getElementById('theme-toggle-btn').textContent = _themeIcons[saved] || '◈';
+    }
   } catch(e) {}
 })();
 
-/* ============================================================
-   HELPERS
-   ============================================================ */
 function $(id) { return document.getElementById(id); }
+
 function e(str) {
   return String(str || "").replace(/[&<>"']/g, function(s) {
-    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[s];
+    return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[s];
   });
 }
+
 function br2iso(str) {
   if (!str) return "";
   var p = str.split("/");
-  return p.length === 3 ? p[2] + "-" + p[1] + "-" + p[0] : "";
+  return p.length === 3 ? p[2]+"-"+p[1]+"-"+p[0] : "";
 }
+
 function fillTb(tbId, rows, keys, colCount) {
   var tb = $(tbId); tb.innerHTML = "";
-  if (!rows || !rows.length) { tb.innerHTML = '<tr><td colspan="' + colCount + '" class="muted">—</td></tr>'; return; }
+  if (!rows || !rows.length) {
+    tb.innerHTML = '<tr><td colspan="'+colCount+'" class="muted" style="font-size:12px;padding:20px">—</td></tr>';
+    return;
+  }
   rows.forEach(function(r) {
     var tr = document.createElement("tr");
-    tr.innerHTML = keys.map(function(k) { return "<td>" + e(String(r[k] || "")) + "</td>"; }).join("");
+    tr.innerHTML = keys.map(function(k) { return "<td>" + e(String(r[k]||"")) + "</td>"; }).join("");
     tb.appendChild(tr);
   });
 }
 
-/* ============================================================
-   TOAST
-   ============================================================ */
 function toast(msg, tipo, ms) {
-  tipo = tipo || "ok"; ms = ms || 3200;
+  tipo = tipo||"ok"; ms = ms||3200;
   var w = $("toast-wrap");
   var el = document.createElement("div");
   el.className = "toast toast-" + tipo;
@@ -530,414 +1388,370 @@ function toast(msg, tipo, ms) {
   }, ms);
 }
 
-/* ============================================================
-   SESSION TIMER
-   ============================================================ */
 function startTimer(expiresAt) {
   var el = $("session-timer");
   el.style.display = "inline";
   if (_ticker) clearInterval(_ticker);
   _ticker = setInterval(function() {
     var d = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
-    var m = String(Math.floor(d / 60)).padStart(2, "0");
-    var s = String(d % 60).padStart(2, "0");
-    el.textContent = "⏱ " + m + ":" + s;
-    el.className = d < 300 ? "warn" : "";
-    if (d === 0) { clearInterval(_ticker); toast("Sessão expirada. Faça login novamente.", "err", 6000); }
+    var m = String(Math.floor(d/60)).padStart(2,"0");
+    var s = String(d%60).padStart(2,"0");
+    el.textContent = m+":"+s;
+    el.className = d < 300 ? "timer-chip timer-warn" : "timer-chip";
+    if (d === 0) { clearInterval(_ticker); toast("Sessão expirada.", "err", 6000); }
   }, 1000);
 }
 
-/* ============================================================
-   IP
-   ============================================================ */
 function getIpInfo() {
   return fetch("https://ipapi.co/json/")
     .then(function(r) { return r.json(); })
-    .then(function(d) { return { ip: d.ip || "", loc: (d.city || "") + ", " + (d.region || "") + ", " + (d.country_name || "") }; })
-    .catch(function() { return { ip: "", loc: "" }; });
+    .then(function(d) { return { ip: d.ip||"", loc: (d.city||"")+", "+(d.region||"")+", "+(d.country_name||"") }; })
+    .catch(function() { return { ip:"", loc:"" }; });
 }
 
-/* ============================================================
-   LOGOUT
-   ============================================================ */
 function logout() {
   if (_ticker) clearInterval(_ticker);
   $("session-timer").style.display = "none";
-  $("session-timer").textContent = "⏱ --:--";
   $("chip-role").textContent = "Desconectado";
+  $("chip-role").className = "chip";
   $("view-app").style.display = "none";
   $("view-login").style.display = "block";
   $("l-user").value = ""; $("l-pass").value = ""; $("l-erro").textContent = "";
   $("area-adm").style.display = "none"; $("area-arq").style.display = "none";
   if (S.token) callScript("sair", S.token).catch(function(){});
-  S = { token: null, user: null, alvo: null, expiresAt: null };
+  S = { token:null, user:null, alvo:null, expiresAt:null };
   _cache = {}; _pendBuf = []; _libBuf = [];
 }
 
-/* ============================================================
-   LOGIN
-   ============================================================ */
 function entrar() {
   var login = $("l-user").value.trim();
   var pass  = $("l-pass").value.trim();
   $("l-erro").textContent = "";
   $("l-loader").style.display = "block";
-
   getIpInfo().then(function(ipInfo) {
     callScript("validarAcesso", login, pass, ipInfo.ip, ipInfo.loc)
       .then(function(res) {
         $("l-loader").style.display = "none";
-        if (!res || !res.sucesso) { $("l-erro").textContent = res && res.mensagem ? res.mensagem : "Falha no login."; return; }
-
+        if (!res||!res.sucesso) { $("l-erro").textContent = res&&res.mensagem ? res.mensagem : "Falha no login."; return; }
         S.token = res.token;
         S.user  = { nome: res.nome, funcao: res.funcao };
-        S.expiresAt = res.expiresAt || (Date.now() + 6 * 3600 * 1000);
-
+        S.expiresAt = res.expiresAt || (Date.now() + 6*3600*1000);
         $("chip-role").textContent = res.funcao;
+        $("chip-role").className = "chip chip-accent";
         $("view-login").style.display = "none";
         $("view-app").style.display = "block";
         $("u-nome").textContent = res.nome;
         $("u-role").textContent = res.funcao;
         startTimer(S.expiresAt);
-
         var isAdm = res.funcao === "ADMIN";
         $("area-adm").style.display = isAdm ? "block" : "none";
-        $("area-arq").style.display = isAdm ? "none" : "block";
-
+        $("area-arq").style.display = isAdm ? "none"  : "block";
         if (isAdm) { loadArquitetosAdmin(); loadRelArq(); loadSenhaUsers(); }
         recarregar();
       })
       .catch(function(err) {
         $("l-loader").style.display = "none";
-        $("l-erro").textContent = err && err.message ? err.message : "Erro ao autenticar.";
+        $("l-erro").textContent = err&&err.message ? err.message : "Erro ao autenticar.";
       });
   });
 }
 
-/* ============================================================
-   RECARREGAR
-   ============================================================ */
 function recarregar() {
   var isAdm = S.user && S.user.funcao === "ADMIN";
   if (!isAdm) { $("skel-arq").style.display = "block"; $("content-arq").style.display = "none"; }
-
-  callScript("getPainel", S.token, S.alvo || null)
+  callScript("getPainel", S.token, S.alvo||null)
     .then(function(res) {
       if (!isAdm) { $("skel-arq").style.display = "none"; $("content-arq").style.display = "block"; }
-      if (!res || !res.ok) return;
-
+      if (!res||!res.ok) return;
       if (!isAdm) {
-        $("arq-saldo").textContent = res.resumo.saldoDisponivel;
-        $("arq-pend").textContent  = res.resumo.pendente;
+        $("arq-saldo").textContent  = res.resumo.saldoDisponivel;
+        $("arq-pend").textContent   = res.resumo.pendente;
         $("arq-reserv").textContent = res.resumo.reservado;
-
         if (res.meta && res.meta.meta > 0) {
           $("arq-meta-wrap").style.display = "block";
-          var pct = Math.min(100, Math.round((res.pontosMes / res.meta.meta) * 100));
-          $("arq-meta-mes").textContent  = res.pontosMes || 0;
+          var pct = Math.min(100, Math.round((res.pontosMes/res.meta.meta)*100));
+          $("arq-meta-mes").textContent  = res.pontosMes||0;
           $("arq-meta-alvo").textContent = res.meta.meta;
           $("arq-meta-prog").style.width = pct + "%";
-          $("arq-meta-label").textContent = pct + "% da meta" + (res.meta.periodo ? " (" + res.meta.periodo + ")" : "");
+          $("arq-meta-label").textContent = pct+"% da meta"+(res.meta.periodo ? " ("+res.meta.periodo+")" : "");
         } else { $("arq-meta-wrap").style.display = "none"; }
-
         fillTb("tb-arp",  res.tabelas.pendentes,  ["cliente","data","pontos","previsao"],  4);
         fillTb("tb-arl",  res.tabelas.liberados,  ["cliente","data","pontos","liberacao"], 4);
         fillTb("tb-arra", res.tabelas.resgatesAbertos,    ["dataPedido","pontos","detalhes"], 3);
         fillTb("tb-arrc", res.tabelas.resgatesConcluidos, ["dataPedido","pontos","detalhes"], 3);
       } else {
-        renderAdmVisao(res.tabelas.pendentes || [], res.tabelas.liberados || []);
+        renderAdmVisao(res.tabelas.pendentes||[], res.tabelas.liberados||[]);
         refreshGlobal();
       }
     })
     .catch(function(err) {
       if (!isAdm) { $("skel-arq").style.display = "none"; $("content-arq").style.display = "block"; }
-      toast(err && err.message ? err.message : "Erro ao carregar.", "err");
+      toast(err&&err.message ? err.message : "Erro ao carregar.", "err");
     });
 }
 
-/* ============================================================
-   ADMIN — SELECTS
-   ============================================================ */
 function loadArquitetosAdmin() {
-  callScript("getArquitetosComSaldo", S.token)
-    .then(function(res) {
-      if (!res || !res.ok) return;
-      var saldos = res.saldos || {};
-      var sel = $("adm-sel-arq");
-      sel.innerHTML = '<option value="">-- selecionar --</option>';
-      (res.lista || []).forEach(function(n) {
-        var o = document.createElement("option");
-        o.value = n;
-        o.textContent = n + (saldos[n] !== undefined ? " (" + saldos[n] + " pts)" : "");
-        sel.appendChild(o);
-      });
-    }).catch(function(){});
-}
-function loadRelArq() {
-  callScript("getArquitetosParaAdmin", S.token)
-    .then(function(res) {
-      var lista = (res && res.lista) ? res.lista : (Array.isArray(res) ? res : []);
-      var sel = $("rel-arq");
-      sel.innerHTML = '<option value="">Todos</option>';
-      lista.forEach(function(n) { var o = document.createElement("option"); o.value = n; o.textContent = n; sel.appendChild(o); });
-    }).catch(function(){});
-}
-function loadSenhaUsers() {
-  callScript("getArquitetosParaAdmin", S.token)
-    .then(function(res) {
-      var lista = (res && res.lista) ? res.lista : (Array.isArray(res) ? res : []);
-      var sel = $("sn-user");
-      sel.innerHTML = '<option value="">-- selecionar --</option>';
-      lista.forEach(function(n) { var o = document.createElement("option"); o.value = n; o.textContent = n; sel.appendChild(o); });
-    }).catch(function(){});
-}
-function admSelArq() {
-  S.alvo = $("adm-sel-arq").value || null;
-  recarregar();
+  callScript("getArquitetosComSaldo", S.token).then(function(res) {
+    if (!res||!res.ok) return;
+    var saldos = res.saldos||{};
+    var sel = $("adm-sel-arq");
+    sel.innerHTML = '<option value="">— selecionar —</option>';
+    (res.lista||[]).forEach(function(n) {
+      var o = document.createElement("option");
+      o.value = n; o.textContent = n + (saldos[n]!==undefined ? " ("+saldos[n]+" pts)" : "");
+      sel.appendChild(o);
+    });
+  }).catch(function(){});
 }
 
-/* ============================================================
-   ADMIN — LANÇAR
-   ============================================================ */
+function loadRelArq() {
+  callScript("getArquitetosParaAdmin", S.token).then(function(res) {
+    var lista = (res&&res.lista) ? res.lista : (Array.isArray(res) ? res : []);
+    var sel = $("rel-arq");
+    sel.innerHTML = '<option value="">Todos</option>';
+    lista.forEach(function(n) {
+      var o = document.createElement("option"); o.value = n; o.textContent = n; sel.appendChild(o);
+    });
+  }).catch(function(){});
+}
+
+function loadSenhaUsers() {
+  callScript("getArquitetosParaAdmin", S.token).then(function(res) {
+    var lista = (res&&res.lista) ? res.lista : (Array.isArray(res) ? res : []);
+    var sel = $("sn-user");
+    sel.innerHTML = '<option value="">— selecionar —</option>';
+    lista.forEach(function(n) {
+      var o = document.createElement("option"); o.value = n; o.textContent = n; sel.appendChild(o);
+    });
+  }).catch(function(){});
+}
+
+function admSelArq() { S.alvo = $("adm-sel-arq").value||null; recarregar(); }
+
 function admLancar() {
   var arq = $("adm-sel-arq").value;
-  var err = $("adm-err");
-  err.textContent = "";
+  var err = $("adm-err"); err.textContent = "";
   if (!arq) { err.textContent = "Selecione um arquiteto."; return; }
   callScript("adminLancarPontos", S.token, {
-    arquiteto:   arq,
+    arquiteto:    arq,
     vendaInterna: $("adm-venda").value.trim(),
     cliente:      $("adm-cli").value.trim(),
     pontos:       $("adm-pts").value.trim(),
     dataLiberacao:$("adm-prev").value,
     observacao:   $("adm-obs").value.trim()
-  })
-  .then(function(res) {
-    toast(res.mensagem || "Lançado!", "ok");
-    ["adm-venda","adm-cli","adm-pts","adm-prev","adm-obs"].forEach(function(id) { $(id).value = ""; });
+  }).then(function(res) {
+    toast(res.mensagem||"Lançado!", "ok");
+    ["adm-venda","adm-cli","adm-pts","adm-prev","adm-obs"].forEach(function(id){ $(id).value=""; });
     recarregar(); loadArquitetosAdmin();
-  })
-  .catch(function(e) { err.textContent = e && e.message ? e.message : "Erro."; });
+  }).catch(function(e2) { err.textContent = e2&&e2.message ? e2.message : "Erro."; });
 }
 
-/* ============================================================
-   ARQUITETO — RESGATE
-   ============================================================ */
 function checkSaldo(val) {
   var el = $("arq-saldo-check");
-  var saldo = parseInt($("arq-saldo").textContent) || 0;
-  var v = parseInt(val) || 0;
-  if (!v) { el.textContent = ""; el.style.color = ""; return; }
-  if (v > saldo) { el.textContent = "⚠️ Insuficiente — disponível: " + saldo + " pts"; el.style.color = "var(--red)"; }
-  else           { el.textContent = "✓ OK — disponível: " + saldo + " pts";            el.style.color = "var(--green)"; }
+  var saldo = parseInt($("arq-saldo").textContent)||0;
+  var v = parseInt(val)||0;
+  if (!v) { el.textContent=""; return; }
+  if (v > saldo) { el.textContent = "Insuficiente — disponível: "+saldo+" pts"; el.style.color = "var(--red)"; }
+  else           { el.textContent = "OK — disponível: "+saldo+" pts";          el.style.color = "var(--green)"; }
 }
+
 function solicitarResgate() {
   var pts = $("arq-r-pts").value.trim();
   var det = $("arq-r-det").value.trim();
-  var err = $("arq-erro");
-  err.textContent = "";
+  var err = $("arq-erro"); err.textContent = "";
   callScript("solicitarResgate", S.token, pts, det, "")
     .then(function(res) {
-      toast(res.mensagem || "Pedido enviado!", "ok");
-      $("arq-r-pts").value = ""; $("arq-r-det").value = ""; $("arq-saldo-check").textContent = "";
+      toast(res.mensagem||"Pedido enviado!", "ok");
+      $("arq-r-pts").value=""; $("arq-r-det").value=""; $("arq-saldo-check").textContent="";
       recarregar();
     })
-    .catch(function(e) { err.textContent = e && e.message ? e.message : "Erro."; });
+    .catch(function(e2) { err.textContent = e2&&e2.message ? e2.message : "Erro."; });
 }
 
-/* ============================================================
-   ADMIN — TABS
-   ============================================================ */
 function setTab(which) {
   ["visao","pag","resg","caixa","rel","hist","senha"].forEach(function(k) {
-    $("t-" + k).classList.remove("active");
-    $("tab-" + k).style.display = "none";
+    $("t-"+k).classList.remove("active");
+    $("tab-"+k).style.display = "none";
   });
-  $("t-" + which).classList.add("active");
-  $("tab-" + which).style.display = "block";
-  if (which === "hist")  loadHistorico();
-  if (which === "caixa") loadCaixa();
+  $("t-"+which).classList.add("active");
+  $("tab-"+which).style.display = "block";
+  if (which==="hist")  loadHistorico();
+  if (which==="caixa") loadCaixa();
 }
 
-/* ============================================================
-   ADMIN — VISÃO ARQUITETO
-   ============================================================ */
-function renderAdmVisao(pend, lib) { _pendBuf = pend; _libBuf = lib; _renderAdmPend(pend); _renderAdmLib(lib); }
+function renderAdmVisao(pend, lib) { _pendBuf=pend; _libBuf=lib; _renderAdmPend(pend); _renderAdmLib(lib); }
+
 function _renderAdmPend(rows) {
   var tb = $("tb-adp"); tb.innerHTML = "";
-  if (!S.alvo) { tb.innerHTML = '<tr><td colspan="6" class="muted">Selecione um arquiteto.</td></tr>'; return; }
-  if (!rows || !rows.length) { tb.innerHTML = '<tr><td colspan="6" class="muted">—</td></tr>'; return; }
+  if (!S.alvo) { tb.innerHTML='<tr><td colspan="6" class="muted" style="font-size:12px;padding:20px">Selecione um arquiteto.</td></tr>'; return; }
+  if (!rows||!rows.length) { tb.innerHTML='<tr><td colspan="6" class="muted" style="font-size:12px;padding:20px">—</td></tr>'; return; }
   rows.forEach(function(r) {
     _cache[r.id] = r;
     var tr = document.createElement("tr");
-    tr.innerHTML = '<td>' + e(r.cliente) + '</td><td>' + e(r.data || "") + '</td><td>' + e(String(r.pontos)) + '</td><td>' + e(r.previsao || "") + '</td>'
-      + '<td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + e(r.observacao || "") + '">' + e(r.observacao || "—") + '</td>'
-      + '<td class="t-actions">'
-      + '<button class="btn btn-ghost btn-sm" onclick="openEdit(\'' + r.id + '\')">✏️</button> '
-      + '<button class="btn btn-primary btn-sm" onclick="admLiberar(\'' + r.id + '\')">Liberar</button> '
-      + '<button class="btn btn-red btn-sm" onclick="admExcluir(\'' + r.id + '\')">🗑</button>'
-      + '</td>';
+    tr.innerHTML = '<td>'+e(r.cliente)+'</td><td>'+e(r.data||"")+'</td><td>'+e(String(r.pontos))+'</td><td>'+e(r.previsao||"")+'</td>'
+      +'<td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+e(r.observacao||"")+'">'+e(r.observacao||"—")+'</td>'
+      +'<td class="t-actions">'
+      +'<button class="btn btn-ghost btn-sm" onclick="openEdit(\''+r.id+'\')">Editar</button> '
+      +'<button class="btn btn-primary btn-sm" onclick="admLiberar(\''+r.id+'\')">Liberar</button> '
+      +'<button class="btn btn-red btn-sm" onclick="admExcluir(\''+r.id+'\')">✕</button>'
+      +'</td>';
     tb.appendChild(tr);
   });
 }
+
 function _renderAdmLib(rows) {
   var tb = $("tb-adl"); tb.innerHTML = "";
-  if (!S.alvo) { tb.innerHTML = '<tr><td colspan="6" class="muted">Selecione um arquiteto.</td></tr>'; return; }
-  if (!rows || !rows.length) { tb.innerHTML = '<tr><td colspan="6" class="muted">—</td></tr>'; return; }
+  if (!S.alvo) { tb.innerHTML='<tr><td colspan="6" class="muted" style="font-size:12px;padding:20px">Selecione um arquiteto.</td></tr>'; return; }
+  if (!rows||!rows.length) { tb.innerHTML='<tr><td colspan="6" class="muted" style="font-size:12px;padding:20px">—</td></tr>'; return; }
   rows.forEach(function(r) {
     _cache[r.id] = r;
     var tr = document.createElement("tr");
-    tr.innerHTML = '<td>' + e(r.cliente) + '</td><td>' + e(r.data || "") + '</td><td>' + e(String(r.pontos)) + '</td><td>' + e(r.liberacao || "") + '</td>'
-      + '<td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + e(r.observacao || "") + '">' + e(r.observacao || "—") + '</td>'
-      + '<td class="t-actions">'
-      + '<button class="btn btn-ghost btn-sm" onclick="openEdit(\'' + r.id + '\')">✏️</button> '
-      + '<button class="btn btn-red btn-sm" onclick="admExcluir(\'' + r.id + '\')">🗑</button>'
-      + '</td>';
+    tr.innerHTML = '<td>'+e(r.cliente)+'</td><td>'+e(r.data||"")+'</td><td>'+e(String(r.pontos))+'</td><td>'+e(r.liberacao||"")+'</td>'
+      +'<td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+e(r.observacao||"")+'">'+e(r.observacao||"—")+'</td>'
+      +'<td class="t-actions">'
+      +'<button class="btn btn-ghost btn-sm" onclick="openEdit(\''+r.id+'\')">Editar</button> '
+      +'<button class="btn btn-red btn-sm" onclick="admExcluir(\''+r.id+'\')">✕</button>'
+      +'</td>';
     tb.appendChild(tr);
   });
 }
+
 function applyVisaoFilter() {
-  var de = $("vd-de").value, ate = $("vd-ate").value;
+  var de=$("vd-de").value, ate=$("vd-ate").value;
   function filt(rows) { return rows.filter(function(r) {
-    var d = br2iso(r.data || r.previsao || r.liberacao || "");
-    if (de && d && d < de) return false;
-    if (ate && d && d > ate) return false;
+    var d = br2iso(r.data||r.previsao||r.liberacao||"");
+    if (de&&d&&d<de) return false;
+    if (ate&&d&&d>ate) return false;
     return true;
   }); }
   _renderAdmPend(filt(_pendBuf)); _renderAdmLib(filt(_libBuf));
 }
-function clearVisaoFilter() { $("vd-de").value = ""; $("vd-ate").value = ""; _renderAdmPend(_pendBuf); _renderAdmLib(_libBuf); }
-function clearPagFilter()   { $("pg-de").value = ""; $("pg-ate").value = ""; refreshGlobal(); }
+function clearVisaoFilter() { $("vd-de").value=""; $("vd-ate").value=""; _renderAdmPend(_pendBuf); _renderAdmLib(_libBuf); }
+function clearPagFilter()   { $("pg-de").value=""; $("pg-ate").value=""; refreshGlobal(); }
 
-/* ============================================================
-   ADMIN — GLOBAL
-   ============================================================ */
 function refreshGlobal() {
-  if (!S.user || S.user.funcao !== "ADMIN") return;
-  var filtros = { dataIni: $("pg-de") && $("pg-de").value || "", dataFim: $("pg-ate") && $("pg-ate").value || "" };
+  if (!S.user||S.user.funcao!=="ADMIN") return;
+  var filtros = { dataIni:$("pg-de")&&$("pg-de").value||"", dataFim:$("pg-ate")&&$("pg-ate").value||"" };
   callScript("getGlobalAdmin", S.token, filtros)
     .then(function(res) {
-      if (!res || !res.ok) return;
-      var s = res.summary || {};
-      $("s-pend").textContent  = s.totalPendente || 0;
-      $("s-lib").textContent   = s.totalLiberado || 0;
-      $("s-saldo").textContent = s.totalSaldo    || 0;
-      $("s-reserv").textContent= s.totalResgateAberto || 0;
-      $("s-resg").textContent  = s.totalResgatado || 0;
-      renderPag(res.futures || [], res.done || []);
-      renderResg(res.resgOpen || [], res.resgOk || []);
-      (res.futures || []).forEach(function(r) { _cache[r.id] = r; });
-      (res.done    || []).forEach(function(r) { _cache[r.id] = r; });
+      if (!res||!res.ok) return;
+      var s = res.summary||{};
+      $("s-pend").textContent  = s.totalPendente||0;
+      $("s-lib").textContent   = s.totalLiberado||0;
+      $("s-saldo").textContent = s.totalSaldo||0;
+      $("s-reserv").textContent= s.totalResgateAberto||0;
+      $("s-resg").textContent  = s.totalResgatado||0;
+      renderPag(res.futures||[], res.done||[]);
+      renderResg(res.resgOpen||[], res.resgOk||[]);
+      (res.futures||[]).forEach(function(r){ _cache[r.id]=r; });
+      (res.done||[]).forEach(function(r){ _cache[r.id]=r; });
     })
-    .catch(function(err) { toast(err && err.message ? err.message : "Erro global", "err"); });
+    .catch(function(err){ toast(err&&err.message ? err.message : "Erro global","err"); });
 }
+
 function renderPag(futuros, feitos) {
   var tbF = $("tb-fut"); tbF.innerHTML = "";
-  if (!futuros || !futuros.length) { tbF.innerHTML = '<tr><td colspan="5" class="muted">—</td></tr>'; }
+  if (!futuros||!futuros.length) { tbF.innerHTML='<tr><td colspan="5" class="muted" style="font-size:12px;padding:20px">—</td></tr>'; }
   else {
-    futuros.sort(function(a, b) { return (a.previsao || "").localeCompare(b.previsao || ""); });
+    futuros.sort(function(a,b){ return (a.previsao||"").localeCompare(b.previsao||""); });
     futuros.forEach(function(r) {
-      _cache[r.id] = r;
-      var tr = document.createElement("tr");
-      tr.innerHTML = '<td>' + e(r.arquiteto) + '</td><td>' + e(r.cliente) + '</td><td>' + e(String(r.pontos)) + '</td><td>' + e(r.previsao || "") + '</td>'
-        + '<td class="t-actions">'
-        + '<button class="btn btn-ghost btn-sm" onclick="openEdit(\'' + r.id + '\')">✏️</button> '
-        + '<button class="btn btn-primary btn-sm" onclick="admLiberar(\'' + r.id + '\')">Liberar</button> '
-        + '<button class="btn btn-red btn-sm" onclick="admExcluir(\'' + r.id + '\')">🗑</button>'
-        + '</td>';
+      _cache[r.id]=r;
+      var tr=document.createElement("tr");
+      tr.innerHTML='<td>'+e(r.arquiteto)+'</td><td>'+e(r.cliente)+'</td><td>'+e(String(r.pontos))+'</td><td>'+e(r.previsao||"")+'</td>'
+        +'<td class="t-actions">'
+        +'<button class="btn btn-ghost btn-sm" onclick="openEdit(\''+r.id+'\')">Editar</button> '
+        +'<button class="btn btn-primary btn-sm" onclick="admLiberar(\''+r.id+'\')">Liberar</button> '
+        +'<button class="btn btn-red btn-sm" onclick="admExcluir(\''+r.id+'\')">✕</button>'
+        +'</td>';
       tbF.appendChild(tr);
     });
   }
   var tbD = $("tb-don"); tbD.innerHTML = "";
-  if (!feitos || !feitos.length) { tbD.innerHTML = '<tr><td colspan="4" class="muted">—</td></tr>'; }
+  if (!feitos||!feitos.length) { tbD.innerHTML='<tr><td colspan="4" class="muted" style="font-size:12px;padding:20px">—</td></tr>'; }
   else {
-    feitos.sort(function(a, b) { return (b.liberacao || "").localeCompare(a.liberacao || ""); });
+    feitos.sort(function(a,b){ return (b.liberacao||"").localeCompare(a.liberacao||""); });
     feitos.forEach(function(r) {
-      var tr = document.createElement("tr");
-      tr.innerHTML = '<td>' + e(r.arquiteto) + '</td><td>' + e(r.cliente) + '</td><td>' + e(String(r.pontos)) + '</td><td>' + e(r.liberacao || "") + '</td>';
+      var tr=document.createElement("tr");
+      tr.innerHTML='<td>'+e(r.arquiteto)+'</td><td>'+e(r.cliente)+'</td><td>'+e(String(r.pontos))+'</td><td>'+e(r.liberacao||"")+'</td>';
       tbD.appendChild(tr);
     });
   }
 }
+
 function renderResg(abertos, conc) {
   var tbA = $("tb-roa"); tbA.innerHTML = "";
-  if (!abertos || !abertos.length) { tbA.innerHTML = '<tr><td colspan="5" class="muted">—</td></tr>'; }
+  if (!abertos||!abertos.length) { tbA.innerHTML='<tr><td colspan="5" class="muted" style="font-size:12px;padding:20px">—</td></tr>'; }
   else {
-    abertos.sort(function(a, b) { return (b.dataPedido || "").localeCompare(a.dataPedido || ""); });
     abertos.forEach(function(r) {
-      var tr = document.createElement("tr");
-      tr.innerHTML = '<td>' + e(r.arquiteto) + '</td><td>' + e(r.dataPedido || "") + '</td><td>' + e(String(r.pontos)) + '</td><td>' + e(r.detalhes || "") + '</td>'
-        + '<td class="t-actions"><button class="btn btn-primary btn-sm" onclick="admConcluirResg(\'' + r.id + '\')">Concluir</button></td>';
+      var tr=document.createElement("tr");
+      tr.innerHTML='<td>'+e(r.arquiteto)+'</td><td>'+e(r.dataPedido||"")+'</td><td>'+e(String(r.pontos))+'</td><td>'+e(r.detalhes||"")+'</td>'
+        +'<td class="t-actions"><button class="btn btn-primary btn-sm" onclick="admConcluirResg(\''+r.id+'\')">Concluir</button></td>';
       tbA.appendChild(tr);
     });
   }
   var tbK = $("tb-rok"); tbK.innerHTML = "";
-  if (!conc || !conc.length) { tbK.innerHTML = '<tr><td colspan="4" class="muted">—</td></tr>'; }
+  if (!conc||!conc.length) { tbK.innerHTML='<tr><td colspan="4" class="muted" style="font-size:12px;padding:20px">—</td></tr>'; }
   else {
-    conc.sort(function(a, b) { return (b.dataPedido || "").localeCompare(a.dataPedido || ""); });
     conc.forEach(function(r) {
-      var tr = document.createElement("tr");
-      tr.innerHTML = '<td>' + e(r.arquiteto) + '</td><td>' + e(r.dataPedido || "") + '</td><td>' + e(String(r.pontos)) + '</td><td>' + e(r.detalhes || "") + '</td>';
+      var tr=document.createElement("tr");
+      tr.innerHTML='<td>'+e(r.arquiteto)+'</td><td>'+e(r.dataPedido||"")+'</td><td>'+e(String(r.pontos))+'</td><td>'+e(r.detalhes||"")+'</td>';
       tbK.appendChild(tr);
     });
   }
 }
 
-/* ============================================================
-   AÇÕES ADMIN
-   ============================================================ */
 function admLiberar(id) {
   if (!confirm("Confirmar liberação dos pontos?")) return;
   callScript("adminLiberarPontos", S.token, id)
-    .then(function() { toast("Pontos liberados!", "ok"); recarregar(); loadArquitetosAdmin(); })
-    .catch(function(err) { toast(err && err.message ? err.message : "Erro", "err"); });
+    .then(function(){ toast("Pontos liberados!","ok"); recarregar(); loadArquitetosAdmin(); })
+    .catch(function(err){ toast(err&&err.message ? err.message : "Erro","err"); });
 }
 function admExcluir(id) {
-  if (!confirm("Excluir este lançamento? Ação irreversível.")) return;
+  if (!confirm("Excluir este lançamento?")) return;
   callScript("adminExcluirLancamento", S.token, id)
-    .then(function() { toast("Lançamento excluído.", "info"); recarregar(); loadArquitetosAdmin(); })
-    .catch(function(err) { toast(err && err.message ? err.message : "Erro", "err"); });
+    .then(function(){ toast("Lançamento excluído.","info"); recarregar(); loadArquitetosAdmin(); })
+    .catch(function(err){ toast(err&&err.message ? err.message : "Erro","err"); });
 }
 function admConcluirResg(id) {
   if (!confirm("Confirmar conclusão do resgate?")) return;
   callScript("adminConcluirResgate", S.token, id)
-    .then(function() { toast("Resgate concluído!", "ok"); refreshGlobal(); loadArquitetosAdmin(); })
-    .catch(function(err) { toast(err && err.message ? err.message : "Erro", "err"); });
+    .then(function(){ toast("Resgate concluído!","ok"); refreshGlobal(); loadArquitetosAdmin(); })
+    .catch(function(err){ toast(err&&err.message ? err.message : "Erro","err"); });
 }
 
-/* ============================================================
-   MODAL EDITAR
-   ============================================================ */
 function openEdit(id) {
-  var r = _cache[id] || {};
-  _mModal = "editar"; _idModal = id;
-  $("modal-titulo").textContent = "✏️ Editar Lançamento";
+  var r = _cache[id]||{};
+  _mModal="editar"; _idModal=id;
+  $("modal-titulo").textContent = "Editar Lançamento";
   $("modal-erro").textContent = "";
   $("modal-content").innerHTML =
-    '<div class="grid2" style="gap:10px">'
-    + '<div><div class="label">Venda Interna</div><input id="me-vi" value="' + e(r.vendaInterna || "") + '"/></div>'
-    + '<div><div class="label">Cliente</div><input id="me-cli" value="' + e(r.cliente || "") + '"/></div>'
-    + '<div><div class="label">Pontos</div><input id="me-pts" type="number" min="1" value="' + e(String(r.pontos || "")) + '"/></div>'
-    + '<div><div class="label">Previsão</div><input id="me-prev" type="date" value="' + br2iso(r.previsao || r.liberacao || "") + '"/></div>'
-    + '</div>'
-    + '<div style="margin-top:10px"><div class="label">Observação</div><input id="me-obs" value="' + e(r.observacao || "") + '"/></div>';
+    '<div class="grid2" style="gap:12px">'
+    +'<div><span class="field-label">Venda Interna</span><input id="me-vi" value="'+e(r.vendaInterna||"")+'"/></div>'
+    +'<div><span class="field-label">Cliente</span><input id="me-cli" value="'+e(r.cliente||"")+'"/></div>'
+    +'<div><span class="field-label">Pontos</span><input id="me-pts" type="number" min="1" value="'+e(String(r.pontos||""))+'"/></div>'
+    +'<div><span class="field-label">Previsão</span><input id="me-prev" type="date" value="'+br2iso(r.previsao||r.liberacao||"")+'"/></div>'
+    +'</div>'
+    +'<div style="margin-top:12px"><span class="field-label">Observação</span><input id="me-obs" value="'+e(r.observacao||"")+'"/></div>';
   $("modal-overlay").style.display = "flex";
 }
+
 function abrirModalSenha() {
-  _mModal = "senha"; _idModal = null;
-  $("modal-titulo").textContent = "🔑 Trocar Senha";
+  _mModal="senha"; _idModal=null;
+  $("modal-titulo").textContent = "Trocar Senha";
   $("modal-erro").textContent = "";
   $("modal-content").innerHTML =
-    '<div><div class="label">Senha atual</div><input type="password" id="ms-at" placeholder="Senha atual"/></div>'
-    + '<div style="margin-top:10px"><div class="label">Nova senha</div><input type="password" id="ms-nv" placeholder="Mín. 4 caracteres"/></div>'
-    + '<div style="margin-top:10px"><div class="label">Confirmar</div><input type="password" id="ms-cf" placeholder="Repetir"/></div>';
+    '<div><span class="field-label">Senha atual</span><input type="password" id="ms-at" placeholder="Senha atual"/></div>'
+    +'<div style="margin-top:12px"><span class="field-label">Nova senha</span><input type="password" id="ms-nv" placeholder="Mín. 4 caracteres"/></div>'
+    +'<div style="margin-top:12px"><span class="field-label">Confirmar</span><input type="password" id="ms-cf" placeholder="Repetir"/></div>';
   $("modal-overlay").style.display = "flex";
 }
-function closeModal() { $("modal-overlay").style.display = "none"; _mModal = null; _idModal = null; }
-function closeModalOverlay(ev) { if (ev.target === $("modal-overlay")) closeModal(); }
+
+function closeModal() { $("modal-overlay").style.display="none"; _mModal=null; _idModal=null; }
+function closeModalOverlay(ev) { if (ev.target===$("modal-overlay")) closeModal(); }
+
 function modalConfirmar() {
-  var err = $("modal-erro"); err.textContent = "";
-  if (_mModal === "editar") {
+  var err=$("modal-erro"); err.textContent="";
+  if (_mModal==="editar") {
     var p = {
       vendaInterna: $("me-vi").value.trim(),
       cliente:      $("me-cli").value.trim(),
@@ -945,148 +1759,136 @@ function modalConfirmar() {
       dataLiberacao:$("me-prev").value,
       observacao:   $("me-obs").value.trim()
     };
-    if (!p.cliente) { err.textContent = "Informe o cliente."; return; }
-    if (!p.pontos)  { err.textContent = "Informe os pontos."; return; }
+    if (!p.cliente){ err.textContent="Informe o cliente."; return; }
+    if (!p.pontos) { err.textContent="Informe os pontos."; return; }
     callScript("adminEditarLancamento", S.token, _idModal, p)
-      .then(function() { closeModal(); toast("Atualizado!", "ok"); recarregar(); })
-      .catch(function(e) { err.textContent = e && e.message ? e.message : "Erro."; });
+      .then(function(){ closeModal(); toast("Atualizado!","ok"); recarregar(); })
+      .catch(function(e2){ err.textContent = e2&&e2.message ? e2.message : "Erro."; });
   }
-  if (_mModal === "senha") {
-    var at = $("ms-at").value.trim();
-    var nv = $("ms-nv").value.trim();
-    var cf = $("ms-cf").value.trim();
-    if (!at || !nv) { err.textContent = "Preencha todos os campos."; return; }
-    if (nv !== cf)  { err.textContent = "As senhas não coincidem."; return; }
+  if (_mModal==="senha") {
+    var at=$("ms-at").value.trim();
+    var nv=$("ms-nv").value.trim();
+    var cf=$("ms-cf").value.trim();
+    if (!at||!nv){ err.textContent="Preencha todos os campos."; return; }
+    if (nv!==cf)  { err.textContent="Senhas não conferem."; return; }
+    if (nv.length<4){ err.textContent="Mínimo 4 caracteres."; return; }
     callScript("trocarSenha", S.token, at, nv)
-      .then(function(res) { closeModal(); toast(res.mensagem || "Senha alterada!", "ok"); })
-      .catch(function(e) { err.textContent = e && e.message ? e.message : "Erro."; });
+      .then(function(res){ closeModal(); toast(res.mensagem||"Senha alterada!","ok"); })
+      .catch(function(e2){ err.textContent = e2&&e2.message ? e2.message : "Erro."; });
   }
 }
 
-/* ============================================================
-   RESET SENHA ADMIN
-   ============================================================ */
 function admResetSenha() {
   var login = $("sn-user").value;
   var nova  = $("sn-nova").value.trim();
-  $("sn-err").textContent = ""; $("sn-ok").textContent = "";
-  if (!login) { $("sn-err").textContent = "Selecione um usuário."; return; }
-  if (!nova)  { $("sn-err").textContent = "Informe a nova senha."; return; }
+  $("sn-err").textContent=""; $("sn-ok").textContent="";
+  if (!login){ $("sn-err").textContent="Selecione um usuário."; return; }
+  if (!nova||nova.length<4){ $("sn-err").textContent="Mínimo 4 caracteres."; return; }
   callScript("adminResetarSenha", S.token, login, nova)
-    .then(function(res) { $("sn-ok").textContent = res.mensagem || "Senha resetada!"; $("sn-nova").value = ""; toast("Senha resetada!", "ok"); })
-    .catch(function(e) { $("sn-err").textContent = e && e.message ? e.message : "Erro."; });
+    .then(function(res){ $("sn-ok").textContent = res.mensagem||"Senha resetada!"; $("sn-nova").value=""; })
+    .catch(function(e2){ $("sn-err").textContent = e2&&e2.message ? e2.message : "Erro."; });
 }
 
-/* ============================================================
-   PREVISÃO DE CAIXA
-   ============================================================ */
 function loadCaixa() {
-  var g = $("caixa-grid");
-  g.innerHTML = '<div class="skel" style="height:80px"></div><div class="skel" style="height:80px"></div><div class="skel" style="height:80px"></div>';
+  var div = $("caixa-grid");
+  div.innerHTML = '<div class="skel" style="height:120px"></div>';
   callScript("getPrevisaoCaixa", S.token)
     .then(function(res) {
-      g.innerHTML = "";
-      if (!res || !res.previsoes || !res.previsoes.length) { g.innerHTML = '<div class="muted" style="font-size:13px">Nenhuma previsão cadastrada.</div>'; return; }
+      if (!res||!res.ok||!res.previsoes||!res.previsoes.length) {
+        div.innerHTML = '<div class="muted" style="font-size:12px;font-family:var(--font-mono)">Nenhuma previsão.</div>';
+        return;
+      }
+      div.className = "grid3";
+      div.innerHTML = "";
       res.previsoes.forEach(function(p) {
-        var d = document.createElement("div");
-        d.className = "caixa-card";
-        d.innerHTML = '<div style="font-size:13px;font-weight:600">' + e(p.mes) + '</div>'
-          + '<div class="caixa-pts">' + p.pontos + ' pts</div>'
-          + '<div class="caixa-arqs">' + e((p.arquitetos || []).join(", ")) + '</div>';
-        g.appendChild(d);
+        var card = document.createElement("div");
+        card.className = "caixa-card";
+        card.innerHTML = '<div class="caixa-month">'+e(p.mes)+'</div>'
+          +'<div class="caixa-pts">'+e(String(p.pontos))+'</div>'
+          +'<div class="caixa-arqs">'+e(String(p.arquitetos.length))+" arquiteto"+(p.arquitetos.length!==1?"s":"")+'</div>';
+        div.appendChild(card);
       });
     })
-    .catch(function(err) { g.innerHTML = '<div class="err-msg">' + e(err && err.message ? err.message : "Erro") + '</div>'; });
+    .catch(function(err){ div.innerHTML='<div class="err-msg">'+e(err&&err.message ? err.message : "Erro")+'</div>'; });
 }
 
-/* ============================================================
-   HISTÓRICO
-   ============================================================ */
 function loadHistorico() {
-  var tb = $("tb-hist");
-  tb.innerHTML = '<tr><td colspan="7"><div class="skel" style="height:28px"></div></td></tr>';
+  var tb = $("tb-hist"); tb.innerHTML='<tr><td colspan="7" class="muted" style="font-size:12px;padding:20px">Carregando...</td></tr>';
   callScript("getHistorico", S.token)
     .then(function(res) {
-      tb.innerHTML = "";
-      if (!res || !res.rows || !res.rows.length) { tb.innerHTML = '<tr><td colspan="7" class="muted">Nenhum registro.</td></tr>'; return; }
+      tb.innerHTML="";
+      if (!res||!res.rows||!res.rows.length){ tb.innerHTML='<tr><td colspan="7" class="muted" style="font-size:12px;padding:20px">—</td></tr>'; return; }
       res.rows.forEach(function(r) {
-        var tr = document.createElement("tr");
-        tr.innerHTML = '<td>' + e(r.data) + '</td><td>' + e(r.hora) + '</td>'
-          + '<td>' + e(r.usuario) + '</td><td><b>' + e(r.acao) + '</b></td>'
-          + '<td class="muted" style="font-size:11px">' + e(r.detalhes) + '</td>'
-          + '<td class="muted" style="font-size:11px">' + e(r.ip || "") + '</td>'
-          + '<td class="muted" style="font-size:11px">' + e(r.localizacao || "") + '</td>';
+        var tr=document.createElement("tr");
+        tr.innerHTML='<td>'+e(r.data)+'</td><td>'+e(r.hora)+'</td><td>'+e(r.usuario)+'</td><td>'+e(r.acao)+'</td><td>'+e(r.detalhes)+'</td><td>'+e(r.ip)+'</td><td>'+e(r.localizacao)+'</td>';
         tb.appendChild(tr);
       });
     })
-    .catch(function(err) { tb.innerHTML = '<tr><td colspan="7" class="err-msg">' + e(err && err.message ? err.message : "Erro") + '</td></tr>'; });
+    .catch(function(err){ tb.innerHTML='<tr><td colspan="7" class="err-msg" style="padding:20px">'+e(err&&err.message ? err.message : "Erro")+'</td></tr>'; });
 }
 
-/* ============================================================
-   RELATÓRIO + CSV
-   ============================================================ */
 function gerarRel() {
-  var div = $("rel-result");
-  div.innerHTML = '<div class="skel" style="height:28px;margin-bottom:6px"></div><div class="skel" style="height:28px"></div>';
-  $("btn-csv").style.display = "none";
-  callScript("getRelatorio", S.token, {
+  var filtros={
     tipo:      $("rel-tipo").value,
     arquiteto: $("rel-arq").value,
     dataIni:   $("rel-de").value,
     dataFim:   $("rel-ate").value
-  })
-  .then(function(res) {
-    _relRows = res.rows || [];
-    div.innerHTML = "";
-    if (!_relRows.length) { div.innerHTML = '<div class="muted" style="font-size:13px">Nenhum resultado.</div>'; return; }
-    $("btn-csv").style.display = "inline-block";
-    var tb = document.createElement("table");
-    tb.innerHTML = '<thead><tr><th>Tipo</th><th>Arquiteto</th><th>Cliente</th><th>Pontos</th><th>Data</th><th>Status</th><th>Venda Interna</th><th>Obs/Det</th></tr></thead>';
-    var body = document.createElement("tbody");
-    _relRows.forEach(function(r) {
-      var tr = document.createElement("tr");
-      tr.innerHTML = '<td>' + e(r.tipo) + '</td><td>' + e(r.arquiteto) + '</td><td>' + e(r.cliente) + '</td>'
-        + '<td>' + e(String(r.pontos)) + '</td><td>' + e(r.data) + '</td><td>' + e(r.status) + '</td>'
-        + '<td>' + e(r.vendaInterna) + '</td><td>' + e(r.observacao || r.detalhes || "") + '</td>';
-      body.appendChild(tr);
-    });
-    tb.appendChild(body); div.appendChild(tb);
-  })
-  .catch(function(err) { div.innerHTML = '<div class="err-msg">' + e(err && err.message ? err.message : "Erro") + '</div>'; });
-}
-function exportCSV() {
-  if (!_relRows.length) return;
-  var cols = ["tipo","arquiteto","cliente","pontos","data","dataLiberacao","status","vendaInterna","observacao","detalhes"];
-  var hdr  = ["Tipo","Arquiteto","Cliente","Pontos","Data","Data Liberação","Status","Venda Interna","Observação","Detalhes"];
-  var csv  = hdr.join(";") + "\n";
-  _relRows.forEach(function(r) {
-    csv += cols.map(function(c) { return '"' + String(r[c] || "").replace(/"/g, '""') + '"'; }).join(";") + "\n";
-  });
-  var blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-  var url  = URL.createObjectURL(blob);
-  var a    = document.createElement("a");
-  a.href = url; a.download = "relatorio_" + new Date().toISOString().slice(0, 10) + ".csv"; a.click();
-  URL.revokeObjectURL(url);
-  toast("CSV exportado!", "ok");
+  };
+  var div=$("rel-result");
+  div.innerHTML='<div class="skel" style="height:80px"></div>';
+  callScript("getRelatorio", S.token, filtros)
+    .then(function(res) {
+      _relRows = res.rows||[];
+      $("btn-csv").style.display = _relRows.length ? "inline-flex" : "none";
+      if (!_relRows.length){ div.innerHTML='<div class="muted" style="font-size:12px;font-family:var(--font-mono)">Nenhum resultado.</div>'; return; }
+      div.innerHTML="";
+      var table=document.createElement("table");
+      table.className="";
+      var thead=document.createElement("thead");
+      thead.innerHTML='<tr><th>Tipo</th><th>Arquiteto</th><th>Cliente</th><th>Pontos</th><th>Data</th><th>Lib.</th><th>Status</th></tr>';
+      var body=document.createElement("tbody");
+      _relRows.forEach(function(r) {
+        var tr=document.createElement("tr");
+        tr.innerHTML='<td>'+e(r.tipo)+'</td><td>'+e(r.arquiteto)+'</td><td>'+e(r.cliente)+'</td><td>'+e(String(r.pontos))+'</td><td>'+e(r.data)+'</td><td>'+e(r.dataLiberacao)+'</td><td>'+e(r.status)+'</td>';
+        body.appendChild(tr);
+      });
+      table.appendChild(thead); table.appendChild(body);
+      var wrap=document.createElement("div"); wrap.className="t-wrap panel"; wrap.style.padding="0";
+      wrap.appendChild(table); div.appendChild(wrap);
+    })
+    .catch(function(err){ div.innerHTML='<div class="err-msg">'+e(err&&err.message ? err.message : "Erro")+'</div>'; });
 }
 
-/* ============================================================
-   SORT
-   ============================================================ */
-function sortTb(tbId, col) {
-  var key = tbId + "_" + col;
-  var asc = !_sortSt[key]; _sortSt[key] = asc;
-  var tb = $(tbId);
-  var rows = Array.from(tb.querySelectorAll("tr"));
-  rows.sort(function(a, b) {
-    var ca = a.cells[col] ? a.cells[col].textContent.trim() : "";
-    var cb = b.cells[col] ? b.cells[col].textContent.trim() : "";
-    var na = parseFloat(ca.replace(/\D/g, "")), nb = parseFloat(cb.replace(/\D/g, ""));
-    var num = !isNaN(na) && !isNaN(nb);
-    var cmp = num ? na - nb : ca.localeCompare(cb, "pt-BR");
-    return asc ? cmp : -cmp;
+function exportCSV() {
+  if (!_relRows.length) return;
+  var cols=["tipo","arquiteto","cliente","pontos","data","dataLiberacao","status","vendaInterna","observacao","detalhes"];
+  var hdr=["Tipo","Arquiteto","Cliente","Pontos","Data","Data Liberação","Status","Venda Interna","Observação","Detalhes"];
+  var csv=hdr.join(";")+"\n";
+  _relRows.forEach(function(r){
+    csv+=cols.map(function(c){ return '"'+String(r[c]||"").replace(/"/g,'""')+'"'; }).join(";")+"\n";
   });
-  rows.forEach(function(r) { tb.appendChild(r); });
+  var blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");
+  a.href=url; a.download="relatorio_"+new Date().toISOString().slice(0,10)+".csv"; a.click();
+  URL.revokeObjectURL(url);
+  toast("CSV exportado!","ok");
+}
+
+function sortTb(tbId, col) {
+  var key=tbId+"_"+col;
+  var asc=!_sortSt[key]; _sortSt[key]=asc;
+  var tb=$(tbId);
+  var rows=Array.from(tb.querySelectorAll("tr"));
+  rows.sort(function(a,b){
+    var ca=a.cells[col]?a.cells[col].textContent.trim():"";
+    var cb=b.cells[col]?b.cells[col].textContent.trim():"";
+    var na=parseFloat(ca.replace(/\D/g,"")),nb=parseFloat(cb.replace(/\D/g,""));
+    var num=!isNaN(na)&&!isNaN(nb);
+    var cmp=num?na-nb:ca.localeCompare(cb,"pt-BR");
+    return asc?cmp:-cmp;
+  });
+  rows.forEach(function(r){ tb.appendChild(r); });
 }
 </script>
 </body>
