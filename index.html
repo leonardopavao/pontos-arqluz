@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Sistema de Pontos · Arq Luz</title>
+<style>
+/* ── RESET ── */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg1:#0f1117;--bg2:#1a1d2e;
+  --glass:rgba(15,17,23,0.72);
+  --glass-b:rgba(255,255,255,0.14);
+  --card:rgba(255,255,255,0.07);
+  --card-b:rgba(255,255,255,0.13);
+  --text:#f0f2ff;--muted:rgba(240,242,255,0.55);
+  --inp-bg:rgba(255,255,255,0.08);--inp-b:rgba(255,255,255,0.22);
+  --row-b:rgba(255,255,255,0.08);
+  --tab-bg:rgba(255,255,255,0.06);--tab-act:rgba(255,255,255,0.15);
+  --shadow:0 12px 56px rgba(0,0,0,0.65);
+  --green:#3dff8f;--yellow:#facc15;--orange:#fb923c;
+  --red:#ff4f4f;--slate:#94a3b8;
+  --modal-bg:rgba(13,15,23,0.97);
+  --accent:#6c63ff;
+}
+[data-theme="light"]{
+  --glass:rgba(240,242,250,0.82);--glass-b:rgba(0,0,0,0.12);
+  --card:rgba(255,255,255,0.78);--card-b:rgba(0,0,0,0.09);
+  --text:#111827;--muted:rgba(17,24,39,0.52);
+  --inp-bg:rgba(0,0,0,0.04);--inp-b:rgba(0,0,0,0.16);
+  --row-b:rgba(0,0,0,0.06);--tab-bg:rgba(0,0,0,0.05);--tab-act:rgba(0,0,0,0.13);
+  --shadow:0 8px 36px rgba(0,0,0,0.18);--modal-bg:rgba(240,242,250,0.99);
+}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  min-height:100vh;
+  background:
+    linear-gradient(135deg,rgba(10,12,20,0.68) 0%,rgba(20,22,38,0.60) 100%),
+    url('https://img1.wsimg.com/isteam/ip/d6f822d4-fa8b-49c0-9de0-1e295b033915/20241212_082014.jpg/:/rs=w:2320,h:1419')
+    center center/cover fixed;
+  color:var(--text);display:flex;justify-content:center;align-items:flex-start;padding:24px 12px;
+}
+[data-theme="light"] body{
+  background:
+    linear-gradient(135deg,rgba(230,235,245,0.55) 0%,rgba(200,210,230,0.50) 100%),
+    url('https://img1.wsimg.com/isteam/ip/d6f822d4-fa8b-49c0-9de0-1e295b033915/20241212_082014.jpg/:/rs=w:2320,h:1419')
+    center center/cover fixed;
+}
+.shell{width:100%;max-width:1180px;background:var(--glass);border:1px solid var(--glass-b);border-radius:24px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:var(--shadow);overflow:hidden;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--row-b);gap:10px;flex-wrap:wrap;}
+.topbar-brand{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.topbar-sub{font-size:11px;color:var(--muted);letter-spacing:.6px;text-transform:uppercase}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+#session-timer{display:none;font-size:11px;padding:5px 10px;border-radius:999px;border:1px solid var(--inp-b);color:var(--muted);}
+#session-timer.warn{color:var(--red);border-color:var(--red);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.chip{font-size:11px;letter-spacing:.6px;padding:5px 10px;border-radius:999px;border:1px solid var(--inp-b);color:var(--muted);}
+.pad{padding:22px}
+.card{background:var(--card);border:1px solid var(--card-b);border-radius:18px;padding:16px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.grid5{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.row{display:flex;gap:14px;flex-wrap:wrap}
+.col{flex:1;min-width:260px}
+@media(max-width:860px){.grid2,.grid3{grid-template-columns:1fr}.grid5{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.grid5{grid-template-columns:1fr}}
+.label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.muted{color:var(--muted)}
+h2,h3{font-weight:600;margin-bottom:12px}
+input,select,textarea{display:block;width:100%;padding:11px 13px;border-radius:12px;border:1px solid var(--inp-b);background:var(--inp-bg);color:var(--text);outline:none;font-size:13px;transition:border-color .2s,box-shadow .2s;margin-top:5px;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(108,99,255,.18);}
+input::placeholder,textarea::placeholder{color:var(--muted)}
+select option{background:#1a1d2e;color:#fff}
+[data-theme="light"] select option{background:#fff;color:#111}
+.btn{display:inline-block;border:none;cursor:pointer;padding:11px 16px;border-radius:999px;font-weight:600;font-size:13px;transition:transform .15s,opacity .15s;font-family:inherit;}
+.btn:hover{transform:translateY(-2px);opacity:.92}
+.btn:active{transform:translateY(0)}
+.btn-full{width:100%}
+.btn-primary{background:var(--text);color:var(--bg1)}
+.btn-green{background:var(--green);color:#072b14}
+.btn-red{background:var(--red);color:#fff}
+.btn-ghost{background:var(--tab-bg);border:1px solid var(--inp-b);color:var(--text)}
+.btn-accent{background:var(--accent);color:#fff}
+.btn-sm{padding:6px 11px;border-radius:10px;font-size:11px}
+.theme-btn{background:none;border:1px solid var(--inp-b);color:var(--text);border-radius:999px;padding:5px 11px;cursor:pointer;font-size:14px;transition:.2s;font-family:inherit;}
+.theme-btn:hover{background:var(--tab-act)}
+.t-wrap{overflow-x:auto;border-radius:14px}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--card-b);border-radius:14px;overflow:hidden;font-size:12px;}
+th,td{padding:9px 11px;border-bottom:1px solid var(--row-b);text-align:left;vertical-align:middle}
+th{color:var(--muted);font-weight:600;cursor:pointer;user-select:none;white-space:nowrap}
+th:hover{color:var(--text)}
+tr:last-child td{border-bottom:none}
+.t-actions{white-space:nowrap}
+.tabs{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.tab{padding:8px 13px;border-radius:999px;cursor:pointer;border:1px solid var(--inp-b);background:var(--tab-bg);font-weight:600;font-size:12px;color:var(--muted);user-select:none;transition:.18s;}
+.tab.active{color:var(--text);background:var(--tab-act);border-color:var(--glass-b)}
+.skel{background:linear-gradient(90deg,var(--card) 25%,var(--tab-act) 50%,var(--card) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:10px;}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.prog-bar{width:100%;background:var(--tab-bg);border-radius:999px;height:7px;margin-top:6px;overflow:hidden}
+.prog-fill{height:100%;border-radius:999px;transition:width .7s;background:var(--green)}
+#toast-wrap{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
+.toast{padding:12px 18px;border-radius:14px;font-size:13px;font-weight:600;backdrop-filter:blur(12px);max-width:300px;animation:toastIn .3s ease;}
+.toast-ok{background:rgba(61,255,143,.15);border:1px solid var(--green);color:var(--green)}
+.toast-err{background:rgba(255,79,79,.15);border:1px solid var(--red);color:var(--red)}
+.toast-info{background:rgba(250,204,21,.15);border:1px solid var(--yellow);color:var(--yellow)}
+@keyframes toastIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.78);z-index:999;align-items:center;justify-content:center;padding:16px;}
+.modal-box{background:var(--modal-bg);border:1px solid var(--glass-b);border-radius:22px;max-width:500px;width:100%;padding:26px;max-height:90vh;overflow-y:auto;}
+.caixa-card{background:var(--card);border:1px solid var(--card-b);border-radius:14px;padding:14px;text-align:center;}
+.caixa-pts{font-size:26px;font-weight:700;color:var(--yellow);margin-top:4px}
+.caixa-arqs{font-size:11px;color:var(--muted);margin-top:3px}
+.saldo-check{font-size:12px;min-height:16px;margin-top:4px}
+.filtro-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}
+.filtro-row input[type=date],.filtro-row select{width:auto;flex:1;min-width:130px;margin-top:0}
+.err-msg{color:var(--red);font-size:12px;margin-top:6px}
+.ok-msg{color:var(--green);font-size:12px;margin-top:6px}
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+
+/* Config URL banner */
+#cfg-banner{display:none;padding:10px 22px;background:rgba(250,204,21,.12);border-bottom:1px solid rgba(250,204,21,.3);font-size:12px;color:var(--yellow);text-align:center;}
+</style>
+</head>
+<body>
+
+<div id="toast-wrap"></div>
+
+<div id="modal-overlay" onclick="closeModalOverlay(event)">
+  <div class="modal-box">
+    <h3 id="modal-titulo" style="margin-bottom:18px">Modal</h3>
+    <div id="modal-content"></div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-accent btn-full" onclick="modalConfirmar()">Confirmar</button>
+      <button class="btn btn-ghost btn-full" onclick="closeModal()">Cancelar</button>
+    </div>
+    <div class="err-msg" id="modal-erro"></div>
+  </div>
+</div>
+
+<div class="shell">
+  <div id="cfg-banner">⚠️ Configure a URL do Apps Script em <b>SCRIPT_URL</b> no topo do arquivo index.html antes de usar.</div>
+
+  <div class="topbar">
+    <div>
+      <div class="topbar-sub">Portal</div>
+      <div class="topbar-brand">🏆 Sistema de Pontos · Arq Luz</div>
+    </div>
+    <div class="topbar-right">
+      <span id="session-timer">⏱ --:--</span>
+      <span class="chip" id="chip-role">Desconectado</span>
+      <button class="theme-btn" onclick="toggleTema()">🌙</button>
+    </div>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="pad" id="view-login">
+    <div style="max-width:400px;margin:0 auto;padding:20px 0">
+      <h2 style="margin-bottom:6px">Acesso Restrito</h2>
+      <p class="muted" style="font-size:13px;margin-bottom:20px">Entre com seu usuário e senha para continuar.</p>
+      <div>
+        <div class="label">Usuário</div>
+        <input id="l-user" type="text" placeholder="login" onkeydown="if(event.key==='Enter')$('l-pass').focus()"/>
+      </div>
+      <div style="margin-top:12px">
+        <div class="label">Senha</div>
+        <input id="l-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')entrar()"/>
+      </div>
+      <button class="btn btn-primary btn-full" style="margin-top:18px" onclick="entrar()">Entrar</button>
+      <div class="err-msg" id="l-erro"></div>
+      <div id="l-loader" style="display:none;margin-top:10px">
+        <div class="skel" style="height:6px;width:70%;margin:0 auto"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div class="pad" id="view-app" style="display:none">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:18px">
+      <div>
+        <div class="muted" style="font-size:11px">Logado como</div>
+        <h2 style="margin:2px 0 0" id="u-nome">---</h2>
+        <div class="muted" style="font-size:12px" id="u-role">---</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-ghost btn-sm" onclick="recarregar()">↻ Atualizar</button>
+        <button class="btn btn-ghost btn-sm" onclick="abrirModalSenha()">🔑 Senha</button>
+        <button class="btn btn-ghost btn-sm" onclick="logout()">Sair →</button>
+      </div>
+    </div>
+
+    <!-- ÁREA ARQUITETO -->
+    <div id="area-arq" style="display:none">
+      <div id="skel-arq" style="display:none">
+        <div class="skel" style="height:100px;margin-bottom:12px"></div>
+        <div class="skel" style="height:60px;margin-bottom:8px"></div>
+        <div class="skel" style="height:60px"></div>
+      </div>
+      <div id="content-arq">
+        <div class="grid2" style="margin-bottom:18px">
+          <div class="card">
+            <div class="label">Saldo Disponível</div>
+            <div style="font-size:42px;font-weight:700;color:var(--green);margin-top:4px" id="arq-saldo">0</div>
+            <div style="font-size:12px;color:var(--muted)">pontos</div>
+            <div style="margin-top:8px;font-size:13px">
+              <span class="muted">A liberar </span><span style="color:var(--yellow)" id="arq-pend">0</span>
+              &nbsp;&nbsp;
+              <span class="muted">Em resgate </span><span style="color:var(--orange)" id="arq-reserv">0</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="label">Solicitar Resgate</div>
+            <input id="arq-r-pts" type="number" min="1" placeholder="Quantos pontos?" style="margin-top:8px" oninput="checkSaldo(this.value)"/>
+            <div class="saldo-check" id="arq-saldo-check"></div>
+            <textarea id="arq-r-det" placeholder="Detalhes opcionais..." rows="3" style="margin-top:8px;resize:vertical"></textarea>
+            <button class="btn btn-green btn-full" style="margin-top:10px" onclick="solicitarResgate()">Solicitar →</button>
+            <div class="err-msg" id="arq-erro"></div>
+          </div>
+        </div>
+
+        <div id="arq-meta-wrap" style="display:none;margin-bottom:18px">
+          <div class="card">
+            <div class="label">Meta do Mês</div>
+            <div style="display:flex;align-items:center;gap:16px;margin-top:8px;flex-wrap:wrap">
+              <div>
+                <span style="font-size:26px;font-weight:700;color:var(--green)" id="arq-meta-mes">0</span>
+                <span class="muted"> / </span>
+                <span style="font-size:18px;font-weight:600" id="arq-meta-alvo">0</span>
+                <span class="muted" style="font-size:12px"> pts</span>
+              </div>
+              <div style="flex:1;min-width:160px">
+                <div class="prog-bar"><div class="prog-fill" id="arq-meta-prog" style="width:0%;background:var(--yellow)"></div></div>
+                <div style="font-size:11px;color:var(--muted);margin-top:3px" id="arq-meta-label"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-bottom:18px">
+          <h3>Pontos a Liberar</h3>
+          <div class="t-wrap"><table>
+            <thead><tr><th onclick="sortTb('tb-arp',0)">Cliente ⇅</th><th onclick="sortTb('tb-arp',1)">Data ⇅</th><th onclick="sortTb('tb-arp',2)">Pontos ⇅</th><th onclick="sortTb('tb-arp',3)">Previsão ⇅</th></tr></thead>
+            <tbody id="tb-arp"><tr><td colspan="4" class="muted">—</td></tr></tbody>
+          </table></div>
+        </div>
+        <div style="margin-bottom:18px">
+          <h3>Pontos Liberados</h3>
+          <div class="t-wrap"><table>
+            <thead><tr><th onclick="sortTb('tb-arl',0)">Cliente ⇅</th><th onclick="sortTb('tb-arl',1)">Data ⇅</th><th onclick="sortTb('tb-arl',2)">Pontos ⇅</th><th onclick="sortTb('tb-arl',3)">Liberação ⇅</th></tr></thead>
+            <tbody id="tb-arl"><tr><td colspan="4" class="muted">—</td></tr></tbody>
+          </table></div>
+        </div>
+        <div class="grid2">
+          <div>
+            <h3>Resgates em Aberto</h3>
+            <div class="t-wrap"><table>
+              <thead><tr><th onclick="sortTb('tb-arra',0)">Data ⇅</th><th onclick="sortTb('tb-arra',1)">Pontos ⇅</th><th>Detalhes</th></tr></thead>
+              <tbody id="tb-arra"><tr><td colspan="3" class="muted">—</td></tr></tbody>
+            </table></div>
+          </div>
+          <div>
+            <h3>Resgates Concluídos</h3>
+            <div class="t-wrap"><table>
+              <thead><tr><th onclick="sortTb('tb-arrc',0)">Data ⇅</th><th onclick="sortTb('tb-arrc',1)">Pontos ⇅</th><th>Detalhes</th></tr></thead>
+              <tbody id="tb-arrc"><tr><td colspan="3" class="muted">—</td></tr></tbody>
+            </table></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ÁREA ADMIN -->
+    <div id="area-adm" style="display:none">
+
+      <div class="grid5" style="margin-bottom:18px">
+        <div class="card" style="text-align:center"><div class="label" style="font-size:10px">A liberar</div><div style="font-size:26px;font-weight:700;color:var(--yellow);margin-top:6px" id="s-pend">—</div></div>
+        <div class="card" style="text-align:center"><div class="label" style="font-size:10px">Total liberado</div><div style="font-size:26px;font-weight:700;color:var(--green);margin-top:6px" id="s-lib">—</div></div>
+        <div class="card" style="text-align:center"><div class="label" style="font-size:10px">Saldo disponível</div><div style="font-size:26px;font-weight:700;color:var(--green);margin-top:6px" id="s-saldo">—</div></div>
+        <div class="card" style="text-align:center"><div class="label" style="font-size:10px">Em resgate</div><div style="font-size:26px;font-weight:700;color:var(--orange);margin-top:6px" id="s-reserv">—</div></div>
+        <div class="card" style="text-align:center"><div class="label" style="font-size:10px">Resgatado</div><div style="font-size:26px;font-weight:700;color:var(--slate);margin-top:6px" id="s-resg">—</div></div>
+      </div>
+
+      <div class="row" style="margin-bottom:18px">
+        <div class="col card" style="min-width:220px;max-width:300px">
+          <div class="label">Arquiteto</div>
+          <select id="adm-sel-arq" onchange="admSelArq()" style="margin-top:6px">
+            <option value="">-- selecionar --</option>
+          </select>
+        </div>
+        <div class="col card">
+          <div class="label" style="margin-bottom:8px">Lançar Pontos</div>
+          <div class="grid2" style="gap:10px">
+            <div><div class="label">Venda Interna</div><input id="adm-venda" placeholder="VND-00000"/></div>
+            <div><div class="label">Cliente / Obra</div><input id="adm-cli" placeholder="Nome do cliente"/></div>
+            <div><div class="label">Pontos</div><input id="adm-pts" type="number" min="1" placeholder="Ex: 200"/></div>
+            <div><div class="label">Previsão de Liberação</div><input id="adm-prev" type="date"/></div>
+          </div>
+          <div style="margin-top:8px"><div class="label">Observação (interna)</div><input id="adm-obs" placeholder="Nota interna — não visível ao arquiteto"/></div>
+          <button class="btn btn-primary btn-full" style="margin-top:12px" onclick="admLancar()">Lançar Pontos →</button>
+          <div class="err-msg" id="adm-err"></div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active" id="t-visao" onclick="setTab('visao')">Visão Arquiteto</div>
+        <div class="tab" id="t-pag"   onclick="setTab('pag')">Pagamentos</div>
+        <div class="tab" id="t-resg"  onclick="setTab('resg')">Resgates</div>
+        <div class="tab" id="t-caixa" onclick="setTab('caixa')">Previsão de Caixa</div>
+        <div class="tab" id="t-rel"   onclick="setTab('rel')">Relatório</div>
+        <div class="tab" id="t-hist"  onclick="setTab('hist')">Histórico</div>
+        <div class="tab" id="t-senha" onclick="setTab('senha')">Senhas</div>
+      </div>
+
+      <!-- TAB VISÃO -->
+      <div id="tab-visao" style="margin-top:14px">
+        <div class="filtro-row">
+          <div><div class="label">De</div><input type="date" id="vd-de" onchange="applyVisaoFilter()"/></div>
+          <div><div class="label">Até</div><input type="date" id="vd-ate" onchange="applyVisaoFilter()"/></div>
+          <button class="btn btn-ghost btn-sm" style="margin-top:auto" onclick="clearVisaoFilter()">✕ Limpar</button>
+        </div>
+        <div style="margin-bottom:14px">
+          <h3>A Liberar</h3>
+          <div class="t-wrap"><table>
+            <thead><tr><th onclick="sortTb('tb-adp',0)">Cliente ⇅</th><th onclick="sortTb('tb-adp',1)">Data ⇅</th><th onclick="sortTb('tb-adp',2)">Pontos ⇅</th><th onclick="sortTb('tb-adp',3)">Previsão ⇅</th><th>Obs</th><th class="t-actions">Ações</th></tr></thead>
+            <tbody id="tb-adp"><tr><td colspan="6" class="muted">Selecione um arquiteto.</td></tr></tbody>
+          </table></div>
+        </div>
+        <div>
+          <h3>Liberados</h3>
+          <div class="t-wrap"><table>
+            <thead><tr><th onclick="sortTb('tb-adl',0)">Cliente ⇅</th><th onclick="sortTb('tb-adl',1)">Data ⇅</th><th onclick="sortTb('tb-adl',2)">Pontos ⇅</th><th onclick="sortTb('tb-adl',3)">Liberação ⇅</th><th>Obs</th><th class="t-actions">Ações</th></tr></thead>
+            <tbody id="tb-adl"><tr><td colspan="6" class="muted">Selecione um arquiteto.</td></tr></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <!-- TAB PAG -->
+      <div id="tab-pag" style="display:none;margin-top:14px">
+        <div class="filtro-row">
+          <div><div class="label">De</div><input type="date" id="pg-de" onchange="refreshGlobal()"/></div>
+          <div><div class="label">Até</div><input type="date" id="pg-ate" onchange="refreshGlobal()"/></div>
+          <button class="btn btn-ghost btn-sm" style="margin-top:auto" onclick="clearPagFilter()">✕ Limpar</button>
+        </div>
+        <div class="grid2">
+          <div>
+            <h3>Futuros</h3>
+            <div class="t-wrap"><table>
+              <thead><tr><th onclick="sortTb('tb-fut',0)">Arquiteto ⇅</th><th onclick="sortTb('tb-fut',1)">Cliente ⇅</th><th onclick="sortTb('tb-fut',2)">Pontos ⇅</th><th onclick="sortTb('tb-fut',3)">Previsão ⇅</th><th class="t-actions">Ações</th></tr></thead>
+              <tbody id="tb-fut"><tr><td colspan="5" class="muted">—</td></tr></tbody>
+            </table></div>
+          </div>
+          <div>
+            <h3>Concluídos</h3>
+            <div class="t-wrap"><table>
+              <thead><tr><th onclick="sortTb('tb-don',0)">Arquiteto ⇅</th><th onclick="sortTb('tb-don',1)">Cliente ⇅</th><th onclick="sortTb('tb-don',2)">Pontos ⇅</th><th onclick="sortTb('tb-don',3)">Liberação ⇅</th></tr></thead>
+              <tbody id="tb-don"><tr><td colspan="4" class="muted">—</td></tr></tbody>
+            </table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB RESGATES -->
+      <div id="tab-resg" style="display:none;margin-top:14px">
+        <div class="grid2">
+          <div>
+            <h3>Em Aberto</h3>
+            <div class="t-wrap"><table>
+              <thead><tr><th onclick="sortTb('tb-roa',0)">Arquiteto ⇅</th><th onclick="sortTb('tb-roa',1)">Data ⇅</th><th onclick="sortTb('tb-roa',2)">Pontos ⇅</th><th>Detalhes</th><th class="t-actions">Ações</th></tr></thead>
+              <tbody id="tb-roa"><tr><td colspan="5" class="muted">—</td></tr></tbody>
+            </table></div>
+          </div>
+          <div>
+            <h3>Concluídos</h3>
+            <div class="t-wrap"><table>
+              <thead><tr><th onclick="sortTb('tb-rok',0)">Arquiteto ⇅</th><th onclick="sortTb('tb-rok',1)">Data ⇅</th><th onclick="sortTb('tb-rok',2)">Pontos ⇅</th><th>Detalhes</th></tr></thead>
+              <tbody id="tb-rok"><tr><td colspan="4" class="muted">—</td></tr></tbody>
+            </table></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB CAIXA -->
+      <div id="tab-caixa" style="display:none;margin-top:14px">
+        <div class="sec-header">
+          <h3>Previsão de Caixa por Mês</h3>
+          <button class="btn btn-ghost btn-sm" onclick="loadCaixa()">↻ Atualizar</button>
+        </div>
+        <div id="caixa-grid" class="grid3"><div class="muted" style="font-size:13px">Clique em Atualizar.</div></div>
+      </div>
+
+      <!-- TAB RELATÓRIO -->
+      <div id="tab-rel" style="display:none;margin-top:14px">
+        <div class="card" style="margin-bottom:14px">
+          <div class="label" style="margin-bottom:8px">Filtros</div>
+          <div class="filtro-row">
+            <div><div class="label">Tipo</div><select id="rel-tipo"><option value="todos">Todos</option><option value="lancamentos">Lançamentos</option><option value="resgates">Resgates</option></select></div>
+            <div><div class="label">Arquiteto</div><select id="rel-arq"><option value="">Todos</option></select></div>
+            <div><div class="label">De</div><input type="date" id="rel-de"/></div>
+            <div><div class="label">Até</div><input type="date" id="rel-ate"/></div>
+            <button class="btn btn-accent btn-sm" style="margin-top:auto" onclick="gerarRel()">Gerar</button>
+            <button class="btn btn-green btn-sm" id="btn-csv" onclick="exportCSV()" style="display:none;margin-top:auto">⬇ CSV</button>
+          </div>
+        </div>
+        <div id="rel-result"><div class="muted" style="font-size:13px">Configure e clique em Gerar.</div></div>
+      </div>
+
+      <!-- TAB HISTÓRICO -->
+      <div id="tab-hist" style="display:none;margin-top:14px">
+        <div class="sec-header">
+          <h3>Histórico de Ações</h3>
+          <button class="btn btn-ghost btn-sm" onclick="loadHistorico()">↻ Atualizar</button>
+        </div>
+        <div class="t-wrap"><table>
+          <thead><tr><th onclick="sortTb('tb-hist',0)">Data ⇅</th><th>Hora</th><th onclick="sortTb('tb-hist',2)">Usuário ⇅</th><th onclick="sortTb('tb-hist',3)">Ação ⇅</th><th>Detalhes</th><th>IP</th><th>Localização</th></tr></thead>
+          <tbody id="tb-hist"><tr><td colspan="7" class="muted">Clique em Atualizar.</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <!-- TAB SENHAS -->
+      <div id="tab-senha" style="display:none;margin-top:14px">
+        <div class="card" style="max-width:460px">
+          <div class="label" style="margin-bottom:8px">🔑 Resetar Senha de Arquiteto</div>
+          <p class="muted" style="font-size:12px;margin-bottom:10px">A senha em texto puro ficará visível na coluna SENHA_LEGIVEL da planilha USUARIOS.</p>
+          <select id="sn-user"><option value="">-- selecionar usuário --</option></select>
+          <input type="text" id="sn-nova" placeholder="Nova senha" style="margin-top:10px"/>
+          <button class="btn btn-primary btn-full" style="margin-top:12px" onclick="admResetSenha()">Resetar Senha</button>
+          <div class="err-msg" id="sn-err"></div>
+          <div class="ok-msg"  id="sn-ok"></div>
+        </div>
+      </div>
+
+    </div><!-- /area-adm -->
+  </div><!-- /view-app -->
+</div><!-- /shell -->
+
+<script>
+/* ============================================================
+   ⚠️  CONFIGURE AQUI — cole a URL do seu Apps Script deployado
+   Exemplo: https://script.google.com/macros/s/AKfyc.../exec
+   ============================================================ */
+var SCRIPT_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
+
+/* ============================================================
+   API — substitui google.script.run com fetch
+   ============================================================ */
+function callScript(action) {
+  var params = Array.prototype.slice.call(arguments, 1);
+  return fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain" }, // text/plain evita preflight CORS
+    body: JSON.stringify({ action: action, params: params })
+  })
+  .then(function(r) {
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  })
+  .then(function(data) {
+    if (data && data.error) throw new Error(data.mensagem || "Erro no servidor.");
+    return data;
+  });
+}
+
+/* ============================================================
+   STATE
+   ============================================================ */
+var S = { token: null, user: null, alvo: null, expiresAt: null };
+var _cache = {}, _mModal = null, _idModal = null, _relRows = [], _sortSt = {};
+var _pendBuf = [], _libBuf = [], _ticker = null;
+
+/* ============================================================
+   TEMA
+   ============================================================ */
+function toggleTema() {
+  var html = document.documentElement;
+  var dark = html.getAttribute("data-theme") === "dark";
+  html.setAttribute("data-theme", dark ? "light" : "dark");
+  document.querySelector(".theme-btn").textContent = dark ? "☀️" : "🌙";
+  try { localStorage.setItem("_tema", dark ? "light" : "dark"); } catch(e) {}
+}
+(function() {
+  try {
+    var t = localStorage.getItem("_tema") || "dark";
+    document.documentElement.setAttribute("data-theme", t);
+    document.addEventListener("DOMContentLoaded", function() {
+      document.querySelector(".theme-btn").textContent = t === "dark" ? "🌙" : "☀️";
+      // Mostra banner se URL não foi configurada
+      if (SCRIPT_URL === "COLE_AQUI_A_URL_DO_APPS_SCRIPT") {
+        document.getElementById("cfg-banner").style.display = "block";
+      }
+    });
+  } catch(e) {}
+})();
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function $(id) { return document.getElementById(id); }
+function e(str) {
+  return String(str || "").replace(/[&<>"']/g, function(s) {
+    return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[s];
+  });
+}
+function br2iso(str) {
+  if (!str) return "";
+  var p = str.split("/");
+  return p.length === 3 ? p[2] + "-" + p[1] + "-" + p[0] : "";
+}
+function fillTb(tbId, rows, keys, colCount) {
+  var tb = $(tbId); tb.innerHTML = "";
+  if (!rows || !rows.length) { tb.innerHTML = '<tr><td colspan="' + colCount + '" class="muted">—</td></tr>'; return; }
+  rows.forEach(function(r) {
+    var tr = document.createElement("tr");
+    tr.innerHTML = keys.map(function(k) { return "<td>" + e(String(r[k] || "")) + "</td>"; }).join("");
+    tb.appendChild(tr);
+  });
+}
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+function toast(msg, tipo, ms) {
+  tipo = tipo || "ok"; ms = ms || 3200;
+  var w = $("toast-wrap");
+  var el = document.createElement("div");
+  el.className = "toast toast-" + tipo;
+  el.textContent = msg;
+  w.appendChild(el);
+  setTimeout(function() {
+    el.style.opacity = "0"; el.style.transition = "opacity .35s";
+    setTimeout(function() { el.remove(); }, 350);
+  }, ms);
+}
+
+/* ============================================================
+   SESSION TIMER
+   ============================================================ */
+function startTimer(expiresAt) {
+  var el = $("session-timer");
+  el.style.display = "inline";
+  if (_ticker) clearInterval(_ticker);
+  _ticker = setInterval(function() {
+    var d = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+    var m = String(Math.floor(d / 60)).padStart(2, "0");
+    var s = String(d % 60).padStart(2, "0");
+    el.textContent = "⏱ " + m + ":" + s;
+    el.className = d < 300 ? "warn" : "";
+    if (d === 0) { clearInterval(_ticker); toast("Sessão expirada. Faça login novamente.", "err", 6000); }
+  }, 1000);
+}
+
+/* ============================================================
+   IP
+   ============================================================ */
+function getIpInfo() {
+  return fetch("https://ipapi.co/json/")
+    .then(function(r) { return r.json(); })
+    .then(function(d) { return { ip: d.ip || "", loc: (d.city || "") + ", " + (d.region || "") + ", " + (d.country_name || "") }; })
+    .catch(function() { return { ip: "", loc: "" }; });
+}
+
+/* ============================================================
+   LOGOUT
+   ============================================================ */
+function logout() {
+  if (_ticker) clearInterval(_ticker);
+  $("session-timer").style.display = "none";
+  $("session-timer").textContent = "⏱ --:--";
+  $("chip-role").textContent = "Desconectado";
+  $("view-app").style.display = "none";
+  $("view-login").style.display = "block";
+  $("l-user").value = ""; $("l-pass").value = ""; $("l-erro").textContent = "";
+  $("area-adm").style.display = "none"; $("area-arq").style.display = "none";
+  if (S.token) callScript("sair", S.token).catch(function(){});
+  S = { token: null, user: null, alvo: null, expiresAt: null };
+  _cache = {}; _pendBuf = []; _libBuf = [];
+}
+
+/* ============================================================
+   LOGIN
+   ============================================================ */
+function entrar() {
+  var login = $("l-user").value.trim();
+  var pass  = $("l-pass").value.trim();
+  $("l-erro").textContent = "";
+  $("l-loader").style.display = "block";
+
+  getIpInfo().then(function(ipInfo) {
+    callScript("validarAcesso", login, pass, ipInfo.ip, ipInfo.loc)
+      .then(function(res) {
+        $("l-loader").style.display = "none";
+        if (!res || !res.sucesso) { $("l-erro").textContent = res && res.mensagem ? res.mensagem : "Falha no login."; return; }
+
+        S.token = res.token;
+        S.user  = { nome: res.nome, funcao: res.funcao };
+        S.expiresAt = res.expiresAt || (Date.now() + 6 * 3600 * 1000);
+
+        $("chip-role").textContent = res.funcao;
+        $("view-login").style.display = "none";
+        $("view-app").style.display = "block";
+        $("u-nome").textContent = res.nome;
+        $("u-role").textContent = res.funcao;
+        startTimer(S.expiresAt);
+
+        var isAdm = res.funcao === "ADMIN";
+        $("area-adm").style.display = isAdm ? "block" : "none";
+        $("area-arq").style.display = isAdm ? "none" : "block";
+
+        if (isAdm) { loadArquitetosAdmin(); loadRelArq(); loadSenhaUsers(); }
+        recarregar();
+      })
+      .catch(function(err) {
+        $("l-loader").style.display = "none";
+        $("l-erro").textContent = err && err.message ? err.message : "Erro ao autenticar.";
+      });
+  });
+}
+
+/* ============================================================
+   RECARREGAR
+   ============================================================ */
+function recarregar() {
+  var isAdm = S.user && S.user.funcao === "ADMIN";
+  if (!isAdm) { $("skel-arq").style.display = "block"; $("content-arq").style.display = "none"; }
+
+  callScript("getPainel", S.token, S.alvo || null)
+    .then(function(res) {
+      if (!isAdm) { $("skel-arq").style.display = "none"; $("content-arq").style.display = "block"; }
+      if (!res || !res.ok) return;
+
+      if (!isAdm) {
+        $("arq-saldo").textContent = res.resumo.saldoDisponivel;
+        $("arq-pend").textContent  = res.resumo.pendente;
+        $("arq-reserv").textContent = res.resumo.reservado;
+
+        if (res.meta && res.meta.meta > 0) {
+          $("arq-meta-wrap").style.display = "block";
+          var pct = Math.min(100, Math.round((res.pontosMes / res.meta.meta) * 100));
+          $("arq-meta-mes").textContent  = res.pontosMes || 0;
+          $("arq-meta-alvo").textContent = res.meta.meta;
+          $("arq-meta-prog").style.width = pct + "%";
+          $("arq-meta-label").textContent = pct + "% da meta" + (res.meta.periodo ? " (" + res.meta.periodo + ")" : "");
+        } else { $("arq-meta-wrap").style.display = "none"; }
+
+        fillTb("tb-arp",  res.tabelas.pendentes,  ["cliente","data","pontos","previsao"],  4);
+        fillTb("tb-arl",  res.tabelas.liberados,  ["cliente","data","pontos","liberacao"], 4);
+        fillTb("tb-arra", res.tabelas.resgatesAbertos,    ["dataPedido","pontos","detalhes"], 3);
+        fillTb("tb-arrc", res.tabelas.resgatesConcluidos, ["dataPedido","pontos","detalhes"], 3);
+      } else {
+        renderAdmVisao(res.tabelas.pendentes || [], res.tabelas.liberados || []);
+        refreshGlobal();
+      }
+    })
+    .catch(function(err) {
+      if (!isAdm) { $("skel-arq").style.display = "none"; $("content-arq").style.display = "block"; }
+      toast(err && err.message ? err.message : "Erro ao carregar.", "err");
+    });
+}
+
+/* ============================================================
+   ADMIN — SELECTS
+   ============================================================ */
+function loadArquitetosAdmin() {
+  callScript("getArquitetosComSaldo", S.token)
+    .then(function(res) {
+      if (!res || !res.ok) return;
+      var saldos = res.saldos || {};
+      var sel = $("adm-sel-arq");
+      sel.innerHTML = '<option value="">-- selecionar --</option>';
+      (res.lista || []).forEach(function(n) {
+        var o = document.createElement("option");
+        o.value = n;
+        o.textContent = n + (saldos[n] !== undefined ? " (" + saldos[n] + " pts)" : "");
+        sel.appendChild(o);
+      });
+    }).catch(function(){});
+}
+function loadRelArq() {
+  callScript("getArquitetosParaAdmin", S.token)
+    .then(function(res) {
+      var lista = (res && res.lista) ? res.lista : (Array.isArray(res) ? res : []);
+      var sel = $("rel-arq");
+      sel.innerHTML = '<option value="">Todos</option>';
+      lista.forEach(function(n) { var o = document.createElement("option"); o.value = n; o.textContent = n; sel.appendChild(o); });
+    }).catch(function(){});
+}
+function loadSenhaUsers() {
+  callScript("getArquitetosParaAdmin", S.token)
+    .then(function(res) {
+      var lista = (res && res.lista) ? res.lista : (Array.isArray(res) ? res : []);
+      var sel = $("sn-user");
+      sel.innerHTML = '<option value="">-- selecionar --</option>';
+      lista.forEach(function(n) { var o = document.createElement("option"); o.value = n; o.textContent = n; sel.appendChild(o); });
+    }).catch(function(){});
+}
+function admSelArq() {
+  S.alvo = $("adm-sel-arq").value || null;
+  recarregar();
+}
+
+/* ============================================================
+   ADMIN — LANÇAR
+   ============================================================ */
+function admLancar() {
+  var arq = $("adm-sel-arq").value;
+  var err = $("adm-err");
+  err.textContent = "";
+  if (!arq) { err.textContent = "Selecione um arquiteto."; return; }
+  callScript("adminLancarPontos", S.token, {
+    arquiteto:   arq,
+    vendaInterna: $("adm-venda").value.trim(),
+    cliente:      $("adm-cli").value.trim(),
+    pontos:       $("adm-pts").value.trim(),
+    dataLiberacao:$("adm-prev").value,
+    observacao:   $("adm-obs").value.trim()
+  })
+  .then(function(res) {
+    toast(res.mensagem || "Lançado!", "ok");
+    ["adm-venda","adm-cli","adm-pts","adm-prev","adm-obs"].forEach(function(id) { $(id).value = ""; });
+    recarregar(); loadArquitetosAdmin();
+  })
+  .catch(function(e) { err.textContent = e && e.message ? e.message : "Erro."; });
+}
+
+/* ============================================================
+   ARQUITETO — RESGATE
+   ============================================================ */
+function checkSaldo(val) {
+  var el = $("arq-saldo-check");
+  var saldo = parseInt($("arq-saldo").textContent) || 0;
+  var v = parseInt(val) || 0;
+  if (!v) { el.textContent = ""; el.style.color = ""; return; }
+  if (v > saldo) { el.textContent = "⚠️ Insuficiente — disponível: " + saldo + " pts"; el.style.color = "var(--red)"; }
+  else           { el.textContent = "✓ OK — disponível: " + saldo + " pts";            el.style.color = "var(--green)"; }
+}
+function solicitarResgate() {
+  var pts = $("arq-r-pts").value.trim();
+  var det = $("arq-r-det").value.trim();
+  var err = $("arq-erro");
+  err.textContent = "";
+  callScript("solicitarResgate", S.token, pts, det, "")
+    .then(function(res) {
+      toast(res.mensagem || "Pedido enviado!", "ok");
+      $("arq-r-pts").value = ""; $("arq-r-det").value = ""; $("arq-saldo-check").textContent = "";
+      recarregar();
+    })
+    .catch(function(e) { err.textContent = e && e.message ? e.message : "Erro."; });
+}
+
+/* ============================================================
+   ADMIN — TABS
+   ============================================================ */
+function setTab(which) {
+  ["visao","pag","resg","caixa","rel","hist","senha"].forEach(function(k) {
+    $("t-" + k).classList.remove("active");
+    $("tab-" + k).style.display = "none";
+  });
+  $("t-" + which).classList.add("active");
+  $("tab-" + which).style.display = "block";
+  if (which === "hist")  loadHistorico();
+  if (which === "caixa") loadCaixa();
+}
+
+/* ============================================================
+   ADMIN — VISÃO ARQUITETO
+   ============================================================ */
+function renderAdmVisao(pend, lib) { _pendBuf = pend; _libBuf = lib; _renderAdmPend(pend); _renderAdmLib(lib); }
+function _renderAdmPend(rows) {
+  var tb = $("tb-adp"); tb.innerHTML = "";
+  if (!S.alvo) { tb.innerHTML = '<tr><td colspan="6" class="muted">Selecione um arquiteto.</td></tr>'; return; }
+  if (!rows || !rows.length) { tb.innerHTML = '<tr><td colspan="6" class="muted">—</td></tr>'; return; }
+  rows.forEach(function(r) {
+    _cache[r.id] = r;
+    var tr = document.createElement("tr");
+    tr.innerHTML = '<td>' + e(r.cliente) + '</td><td>' + e(r.data || "") + '</td><td>' + e(String(r.pontos)) + '</td><td>' + e(r.previsao || "") + '</td>'
+      + '<td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + e(r.observacao || "") + '">' + e(r.observacao || "—") + '</td>'
+      + '<td class="t-actions">'
+      + '<button class="btn btn-ghost btn-sm" onclick="openEdit(\'' + r.id + '\')">✏️</button> '
+      + '<button class="btn btn-primary btn-sm" onclick="admLiberar(\'' + r.id + '\')">Liberar</button> '
+      + '<button class="btn btn-red btn-sm" onclick="admExcluir(\'' + r.id + '\')">🗑</button>'
+      + '</td>';
+    tb.appendChild(tr);
+  });
+}
+function _renderAdmLib(rows) {
+  var tb = $("tb-adl"); tb.innerHTML = "";
+  if (!S.alvo) { tb.innerHTML = '<tr><td colspan="6" class="muted">Selecione um arquiteto.</td></tr>'; return; }
+  if (!rows || !rows.length) { tb.innerHTML = '<tr><td colspan="6" class="muted">—</td></tr>'; return; }
+  rows.forEach(function(r) {
+    _cache[r.id] = r;
+    var tr = document.createElement("tr");
+    tr.innerHTML = '<td>' + e(r.cliente) + '</td><td>' + e(r.data || "") + '</td><td>' + e(String(r.pontos)) + '</td><td>' + e(r.liberacao || "") + '</td>'
+      + '<td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + e(r.observacao || "") + '">' + e(r.observacao || "—") + '</td>'
+      + '<td class="t-actions">'
+      + '<button class="btn btn-ghost btn-sm" onclick="openEdit(\'' + r.id + '\')">✏️</button> '
+      + '<button class="btn btn-red btn-sm" onclick="admExcluir(\'' + r.id + '\')">🗑</button>'
+      + '</td>';
+    tb.appendChild(tr);
+  });
+}
+function applyVisaoFilter() {
+  var de = $("vd-de").value, ate = $("vd-ate").value;
+  function filt(rows) { return rows.filter(function(r) {
+    var d = br2iso(r.data || r.previsao || r.liberacao || "");
+    if (de && d && d < de) return false;
+    if (ate && d && d > ate) return false;
+    return true;
+  }); }
+  _renderAdmPend(filt(_pendBuf)); _renderAdmLib(filt(_libBuf));
+}
+function clearVisaoFilter() { $("vd-de").value = ""; $("vd-ate").value = ""; _renderAdmPend(_pendBuf); _renderAdmLib(_libBuf); }
+function clearPagFilter()   { $("pg-de").value = ""; $("pg-ate").value = ""; refreshGlobal(); }
+
+/* ============================================================
+   ADMIN — GLOBAL
+   ============================================================ */
+function refreshGlobal() {
+  if (!S.user || S.user.funcao !== "ADMIN") return;
+  var filtros = { dataIni: $("pg-de") && $("pg-de").value || "", dataFim: $("pg-ate") && $("pg-ate").value || "" };
+  callScript("getGlobalAdmin", S.token, filtros)
+    .then(function(res) {
+      if (!res || !res.ok) return;
+      var s = res.summary || {};
+      $("s-pend").textContent  = s.totalPendente || 0;
+      $("s-lib").textContent   = s.totalLiberado || 0;
+      $("s-saldo").textContent = s.totalSaldo    || 0;
+      $("s-reserv").textContent= s.totalResgateAberto || 0;
+      $("s-resg").textContent  = s.totalResgatado || 0;
+      renderPag(res.futures || [], res.done || []);
+      renderResg(res.resgOpen || [], res.resgOk || []);
+      (res.futures || []).forEach(function(r) { _cache[r.id] = r; });
+      (res.done    || []).forEach(function(r) { _cache[r.id] = r; });
+    })
+    .catch(function(err) { toast(err && err.message ? err.message : "Erro global", "err"); });
+}
+function renderPag(futuros, feitos) {
+  var tbF = $("tb-fut"); tbF.innerHTML = "";
+  if (!futuros || !futuros.length) { tbF.innerHTML = '<tr><td colspan="5" class="muted">—</td></tr>'; }
+  else {
+    futuros.sort(function(a, b) { return (a.previsao || "").localeCompare(b.previsao || ""); });
+    futuros.forEach(function(r) {
+      _cache[r.id] = r;
+      var tr = document.createElement("tr");
+      tr.innerHTML = '<td>' + e(r.arquiteto) + '</td><td>' + e(r.cliente) + '</td><td>' + e(String(r.pontos)) + '</td><td>' + e(r.previsao || "") + '</td>'
+        + '<td class="t-actions">'
+        + '<button class="btn btn-ghost btn-sm" onclick="openEdit(\'' + r.id + '\')">✏️</button> '
+        + '<button class="btn btn-primary btn-sm" onclick="admLiberar(\'' + r.id + '\')">Liberar</button> '
+        + '<button class="btn btn-red btn-sm" onclick="admExcluir(\'' + r.id + '\')">🗑</button>'
+        + '</td>';
+      tbF.appendChild(tr);
+    });
+  }
+  var tbD = $("tb-don"); tbD.innerHTML = "";
+  if (!feitos || !feitos.length) { tbD.innerHTML = '<tr><td colspan="4" class="muted">—</td></tr>'; }
+  else {
+    feitos.sort(function(a, b) { return (b.liberacao || "").localeCompare(a.liberacao || ""); });
+    feitos.forEach(function(r) {
+      var tr = document.createElement("tr");
+      tr.innerHTML = '<td>' + e(r.arquiteto) + '</td><td>' + e(r.cliente) + '</td><td>' + e(String(r.pontos)) + '</td><td>' + e(r.liberacao || "") + '</td>';
+      tbD.appendChild(tr);
+    });
+  }
+}
+function renderResg(abertos, conc) {
+  var tbA = $("tb-roa"); tbA.innerHTML = "";
+  if (!abertos || !abertos.length) { tbA.innerHTML = '<tr><td colspan="5" class="muted">—</td></tr>'; }
+  else {
+    abertos.sort(function(a, b) { return (b.dataPedido || "").localeCompare(a.dataPedido || ""); });
+    abertos.forEach(function(r) {
+      var tr = document.createElement("tr");
+      tr.innerHTML = '<td>' + e(r.arquiteto) + '</td><td>' + e(r.dataPedido || "") + '</td><td>' + e(String(r.pontos)) + '</td><td>' + e(r.detalhes || "") + '</td>'
+        + '<td class="t-actions"><button class="btn btn-primary btn-sm" onclick="admConcluirResg(\'' + r.id + '\')">Concluir</button></td>';
+      tbA.appendChild(tr);
+    });
+  }
+  var tbK = $("tb-rok"); tbK.innerHTML = "";
+  if (!conc || !conc.length) { tbK.innerHTML = '<tr><td colspan="4" class="muted">—</td></tr>'; }
+  else {
+    conc.sort(function(a, b) { return (b.dataPedido || "").localeCompare(a.dataPedido || ""); });
+    conc.forEach(function(r) {
+      var tr = document.createElement("tr");
+      tr.innerHTML = '<td>' + e(r.arquiteto) + '</td><td>' + e(r.dataPedido || "") + '</td><td>' + e(String(r.pontos)) + '</td><td>' + e(r.detalhes || "") + '</td>';
+      tbK.appendChild(tr);
+    });
+  }
+}
+
+/* ============================================================
+   AÇÕES ADMIN
+   ============================================================ */
+function admLiberar(id) {
+  if (!confirm("Confirmar liberação dos pontos?")) return;
+  callScript("adminLiberarPontos", S.token, id)
+    .then(function() { toast("Pontos liberados!", "ok"); recarregar(); loadArquitetosAdmin(); })
+    .catch(function(err) { toast(err && err.message ? err.message : "Erro", "err"); });
+}
+function admExcluir(id) {
+  if (!confirm("Excluir este lançamento? Ação irreversível.")) return;
+  callScript("adminExcluirLancamento", S.token, id)
+    .then(function() { toast("Lançamento excluído.", "info"); recarregar(); loadArquitetosAdmin(); })
+    .catch(function(err) { toast(err && err.message ? err.message : "Erro", "err"); });
+}
+function admConcluirResg(id) {
+  if (!confirm("Confirmar conclusão do resgate?")) return;
+  callScript("adminConcluirResgate", S.token, id)
+    .then(function() { toast("Resgate concluído!", "ok"); refreshGlobal(); loadArquitetosAdmin(); })
+    .catch(function(err) { toast(err && err.message ? err.message : "Erro", "err"); });
+}
+
+/* ============================================================
+   MODAL EDITAR
+   ============================================================ */
+function openEdit(id) {
+  var r = _cache[id] || {};
+  _mModal = "editar"; _idModal = id;
+  $("modal-titulo").textContent = "✏️ Editar Lançamento";
+  $("modal-erro").textContent = "";
+  $("modal-content").innerHTML =
+    '<div class="grid2" style="gap:10px">'
+    + '<div><div class="label">Venda Interna</div><input id="me-vi" value="' + e(r.vendaInterna || "") + '"/></div>'
+    + '<div><div class="label">Cliente</div><input id="me-cli" value="' + e(r.cliente || "") + '"/></div>'
+    + '<div><div class="label">Pontos</div><input id="me-pts" type="number" min="1" value="' + e(String(r.pontos || "")) + '"/></div>'
+    + '<div><div class="label">Previsão</div><input id="me-prev" type="date" value="' + br2iso(r.previsao || r.liberacao || "") + '"/></div>'
+    + '</div>'
+    + '<div style="margin-top:10px"><div class="label">Observação</div><input id="me-obs" value="' + e(r.observacao || "") + '"/></div>';
+  $("modal-overlay").style.display = "flex";
+}
+function abrirModalSenha() {
+  _mModal = "senha"; _idModal = null;
+  $("modal-titulo").textContent = "🔑 Trocar Senha";
+  $("modal-erro").textContent = "";
+  $("modal-content").innerHTML =
+    '<div><div class="label">Senha atual</div><input type="password" id="ms-at" placeholder="Senha atual"/></div>'
+    + '<div style="margin-top:10px"><div class="label">Nova senha</div><input type="password" id="ms-nv" placeholder="Mín. 4 caracteres"/></div>'
+    + '<div style="margin-top:10px"><div class="label">Confirmar</div><input type="password" id="ms-cf" placeholder="Repetir"/></div>';
+  $("modal-overlay").style.display = "flex";
+}
+function closeModal() { $("modal-overlay").style.display = "none"; _mModal = null; _idModal = null; }
+function closeModalOverlay(ev) { if (ev.target === $("modal-overlay")) closeModal(); }
+function modalConfirmar() {
+  var err = $("modal-erro"); err.textContent = "";
+  if (_mModal === "editar") {
+    var p = {
+      vendaInterna: $("me-vi").value.trim(),
+      cliente:      $("me-cli").value.trim(),
+      pontos:       $("me-pts").value.trim(),
+      dataLiberacao:$("me-prev").value,
+      observacao:   $("me-obs").value.trim()
+    };
+    if (!p.cliente) { err.textContent = "Informe o cliente."; return; }
+    if (!p.pontos)  { err.textContent = "Informe os pontos."; return; }
+    callScript("adminEditarLancamento", S.token, _idModal, p)
+      .then(function() { closeModal(); toast("Atualizado!", "ok"); recarregar(); })
+      .catch(function(e) { err.textContent = e && e.message ? e.message : "Erro."; });
+  }
+  if (_mModal === "senha") {
+    var at = $("ms-at").value.trim();
+    var nv = $("ms-nv").value.trim();
+    var cf = $("ms-cf").value.trim();
+    if (!at || !nv) { err.textContent = "Preencha todos os campos."; return; }
+    if (nv !== cf)  { err.textContent = "As senhas não coincidem."; return; }
+    callScript("trocarSenha", S.token, at, nv)
+      .then(function(res) { closeModal(); toast(res.mensagem || "Senha alterada!", "ok"); })
+      .catch(function(e) { err.textContent = e && e.message ? e.message : "Erro."; });
+  }
+}
+
+/* ============================================================
+   RESET SENHA ADMIN
+   ============================================================ */
+function admResetSenha() {
+  var login = $("sn-user").value;
+  var nova  = $("sn-nova").value.trim();
+  $("sn-err").textContent = ""; $("sn-ok").textContent = "";
+  if (!login) { $("sn-err").textContent = "Selecione um usuário."; return; }
+  if (!nova)  { $("sn-err").textContent = "Informe a nova senha."; return; }
+  callScript("adminResetarSenha", S.token, login, nova)
+    .then(function(res) { $("sn-ok").textContent = res.mensagem || "Senha resetada!"; $("sn-nova").value = ""; toast("Senha resetada!", "ok"); })
+    .catch(function(e) { $("sn-err").textContent = e && e.message ? e.message : "Erro."; });
+}
+
+/* ============================================================
+   PREVISÃO DE CAIXA
+   ============================================================ */
+function loadCaixa() {
+  var g = $("caixa-grid");
+  g.innerHTML = '<div class="skel" style="height:80px"></div><div class="skel" style="height:80px"></div><div class="skel" style="height:80px"></div>';
+  callScript("getPrevisaoCaixa", S.token)
+    .then(function(res) {
+      g.innerHTML = "";
+      if (!res || !res.previsoes || !res.previsoes.length) { g.innerHTML = '<div class="muted" style="font-size:13px">Nenhuma previsão cadastrada.</div>'; return; }
+      res.previsoes.forEach(function(p) {
+        var d = document.createElement("div");
+        d.className = "caixa-card";
+        d.innerHTML = '<div style="font-size:13px;font-weight:600">' + e(p.mes) + '</div>'
+          + '<div class="caixa-pts">' + p.pontos + ' pts</div>'
+          + '<div class="caixa-arqs">' + e((p.arquitetos || []).join(", ")) + '</div>';
+        g.appendChild(d);
+      });
+    })
+    .catch(function(err) { g.innerHTML = '<div class="err-msg">' + e(err && err.message ? err.message : "Erro") + '</div>'; });
+}
+
+/* ============================================================
+   HISTÓRICO
+   ============================================================ */
+function loadHistorico() {
+  var tb = $("tb-hist");
+  tb.innerHTML = '<tr><td colspan="7"><div class="skel" style="height:28px"></div></td></tr>';
+  callScript("getHistorico", S.token)
+    .then(function(res) {
+      tb.innerHTML = "";
+      if (!res || !res.rows || !res.rows.length) { tb.innerHTML = '<tr><td colspan="7" class="muted">Nenhum registro.</td></tr>'; return; }
+      res.rows.forEach(function(r) {
+        var tr = document.createElement("tr");
+        tr.innerHTML = '<td>' + e(r.data) + '</td><td>' + e(r.hora) + '</td>'
+          + '<td>' + e(r.usuario) + '</td><td><b>' + e(r.acao) + '</b></td>'
+          + '<td class="muted" style="font-size:11px">' + e(r.detalhes) + '</td>'
+          + '<td class="muted" style="font-size:11px">' + e(r.ip || "") + '</td>'
+          + '<td class="muted" style="font-size:11px">' + e(r.localizacao || "") + '</td>';
+        tb.appendChild(tr);
+      });
+    })
+    .catch(function(err) { tb.innerHTML = '<tr><td colspan="7" class="err-msg">' + e(err && err.message ? err.message : "Erro") + '</td></tr>'; });
+}
+
+/* ============================================================
+   RELATÓRIO + CSV
+   ============================================================ */
+function gerarRel() {
+  var div = $("rel-result");
+  div.innerHTML = '<div class="skel" style="height:28px;margin-bottom:6px"></div><div class="skel" style="height:28px"></div>';
+  $("btn-csv").style.display = "none";
+  callScript("getRelatorio", S.token, {
+    tipo:      $("rel-tipo").value,
+    arquiteto: $("rel-arq").value,
+    dataIni:   $("rel-de").value,
+    dataFim:   $("rel-ate").value
+  })
+  .then(function(res) {
+    _relRows = res.rows || [];
+    div.innerHTML = "";
+    if (!_relRows.length) { div.innerHTML = '<div class="muted" style="font-size:13px">Nenhum resultado.</div>'; return; }
+    $("btn-csv").style.display = "inline-block";
+    var tb = document.createElement("table");
+    tb.innerHTML = '<thead><tr><th>Tipo</th><th>Arquiteto</th><th>Cliente</th><th>Pontos</th><th>Data</th><th>Status</th><th>Venda Interna</th><th>Obs/Det</th></tr></thead>';
+    var body = document.createElement("tbody");
+    _relRows.forEach(function(r) {
+      var tr = document.createElement("tr");
+      tr.innerHTML = '<td>' + e(r.tipo) + '</td><td>' + e(r.arquiteto) + '</td><td>' + e(r.cliente) + '</td>'
+        + '<td>' + e(String(r.pontos)) + '</td><td>' + e(r.data) + '</td><td>' + e(r.status) + '</td>'
+        + '<td>' + e(r.vendaInterna) + '</td><td>' + e(r.observacao || r.detalhes || "") + '</td>';
+      body.appendChild(tr);
+    });
+    tb.appendChild(body); div.appendChild(tb);
+  })
+  .catch(function(err) { div.innerHTML = '<div class="err-msg">' + e(err && err.message ? err.message : "Erro") + '</div>'; });
+}
+function exportCSV() {
+  if (!_relRows.length) return;
+  var cols = ["tipo","arquiteto","cliente","pontos","data","dataLiberacao","status","vendaInterna","observacao","detalhes"];
+  var hdr  = ["Tipo","Arquiteto","Cliente","Pontos","Data","Data Liberação","Status","Venda Interna","Observação","Detalhes"];
+  var csv  = hdr.join(";") + "\n";
+  _relRows.forEach(function(r) {
+    csv += cols.map(function(c) { return '"' + String(r[c] || "").replace(/"/g, '""') + '"'; }).join(";") + "\n";
+  });
+  var blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement("a");
+  a.href = url; a.download = "relatorio_" + new Date().toISOString().slice(0, 10) + ".csv"; a.click();
+  URL.revokeObjectURL(url);
+  toast("CSV exportado!", "ok");
+}
+
+/* ============================================================
+   SORT
+   ============================================================ */
+function sortTb(tbId, col) {
+  var key = tbId + "_" + col;
+  var asc = !_sortSt[key]; _sortSt[key] = asc;
+  var tb = $(tbId);
+  var rows = Array.from(tb.querySelectorAll("tr"));
+  rows.sort(function(a, b) {
+    var ca = a.cells[col] ? a.cells[col].textContent.trim() : "";
+    var cb = b.cells[col] ? b.cells[col].textContent.trim() : "";
+    var na = parseFloat(ca.replace(/\D/g, "")), nb = parseFloat(cb.replace(/\D/g, ""));
+    var num = !isNaN(na) && !isNaN(nb);
+    var cmp = num ? na - nb : ca.localeCompare(cb, "pt-BR");
+    return asc ? cmp : -cmp;
+  });
+  rows.forEach(function(r) { tb.appendChild(r); });
+}
+</script>
+</body>
+</html>
