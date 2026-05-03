@@ -861,6 +861,10 @@ tr:hover td { background: var(--surface2); }
             <div class="saldo-check" id="arq-saldo-check"></div>
             <span class="field-label" style="margin-top:12px">Detalhes (opcional)</span>
             <textarea id="arq-r-det" rows="3" placeholder="Descreva sua preferência de resgate..." style="resize:vertical"></textarea>
+            <div style="margin-top:12px">
+              <span class="field-label">Confirmar com sua senha</span>
+              <input id="arq-r-senha" type="password" placeholder="••••••••"/>
+            </div>
             <button class="btn btn-primary btn-full" style="margin-top:14px" onclick="solicitarResgate()">Solicitar Resgate →</button>
             <div class="err-msg" id="arq-erro"></div>
           </div>
@@ -920,9 +924,20 @@ tr:hover td { background: var(--surface2); }
           </div>
         </div>
 
-        <div class="grid2">
-          <div>
-            <div class="section-header"><div class="section-title">Resgates em Aberto</div></div>
+        <!-- ABAS DE RESGATES -->
+        <div>
+          <div style="display:flex;gap:8px;margin-bottom:16px">
+            <button id="tab-resg-btn-aberto" onclick="setResgTab('aberto')"
+              style="font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:8px 18px;border-radius:var(--tab-r);border:1px solid var(--accent);background:var(--accent);color:var(--bg);cursor:pointer;transition:.18s;font-weight:600">
+              Em Aberto
+            </button>
+            <button id="tab-resg-btn-conc" onclick="setResgTab('conc')"
+              style="font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:8px 18px;border-radius:var(--tab-r);border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:.18s">
+              Concluídos
+            </button>
+          </div>
+
+          <div id="resg-panel-aberto">
             <div class="t-wrap panel" style="padding:0">
               <table>
                 <thead><tr>
@@ -934,8 +949,8 @@ tr:hover td { background: var(--surface2); }
               </table>
             </div>
           </div>
-          <div>
-            <div class="section-header"><div class="section-title">Resgates Concluídos</div></div>
+
+          <div id="resg-panel-conc" style="display:none">
             <div class="t-wrap panel" style="padding:0">
               <table>
                 <thead><tr>
@@ -1556,16 +1571,41 @@ function checkSaldo(val) {
 }
 
 function solicitarResgate() {
-  var pts = $("arq-r-pts").value.trim();
-  var det = $("arq-r-det").value.trim();
-  var err = $("arq-erro"); err.textContent = "";
-  callScript("solicitarResgate", S.token, pts, det, "")
-    .then(function(res) {
-      toast(res.mensagem||"Pedido enviado!", "ok");
-      $("arq-r-pts").value=""; $("arq-r-det").value=""; $("arq-saldo-check").textContent="";
-      recarregar();
-    })
-    .catch(function(e2) { err.textContent = e2&&e2.message ? e2.message : "Erro."; });
+  var pts   = $("arq-r-pts").value.trim();
+  var det   = $("arq-r-det").value.trim();
+  var senha = $("arq-r-senha").value.trim();
+  var err   = $("arq-erro"); err.textContent = "";
+  if (!pts || parseInt(pts) <= 0) { err.textContent = "Informe a quantidade de pontos."; return; }
+  if (!senha) { err.textContent = "Confirme com sua senha para continuar."; return; }
+
+  // Valida senha antes de solicitar
+  getIpInfo().then(function(ipInfo) {
+    callScript("validarAcesso", S.user.login || S.user.nome, senha, ipInfo.ip, ipInfo.loc)
+      .then(function(res) {
+        if (!res || !res.sucesso) { err.textContent = "Senha incorreta. Tente novamente."; return; }
+        callScript("solicitarResgate", S.token, pts, det, "")
+          .then(function(r) {
+            toast(r.mensagem || "Pedido enviado!", "ok");
+            $("arq-r-pts").value = ""; $("arq-r-det").value = "";
+            $("arq-r-senha").value = ""; $("arq-saldo-check").textContent = "";
+            recarregar();
+          })
+          .catch(function(e2) { err.textContent = e2&&e2.message ? e2.message : "Erro."; });
+      })
+      .catch(function() { err.textContent = "Erro ao validar senha."; });
+  });
+}
+
+function setResgTab(which) {
+  var isAberto = which === "aberto";
+  $("resg-panel-aberto").style.display = isAberto ? "block" : "none";
+  $("resg-panel-conc").style.display   = isAberto ? "none"  : "block";
+  $("tab-resg-btn-aberto").style.background    = isAberto ? "var(--accent)" : "transparent";
+  $("tab-resg-btn-aberto").style.color         = isAberto ? "var(--bg)"     : "var(--text2)";
+  $("tab-resg-btn-aberto").style.borderColor   = isAberto ? "var(--accent)" : "var(--border2)";
+  $("tab-resg-btn-conc").style.background      = isAberto ? "transparent"   : "var(--accent)";
+  $("tab-resg-btn-conc").style.color           = isAberto ? "var(--text2)"  : "var(--bg)";
+  $("tab-resg-btn-conc").style.borderColor     = isAberto ? "var(--border2)": "var(--accent)";
 }
 
 function setTab(which) {
