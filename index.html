@@ -1091,35 +1091,52 @@ tr:hover td { background: var(--surface2); }
           <div><span class="field-label">Até</span><input type="date" id="pg-ate" onchange="refreshGlobal()"/></div>
           <button class="btn btn-ghost btn-sm" style="margin-top:auto" onclick="clearPagFilter()">✕ Limpar</button>
         </div>
-        <div class="grid2">
-          <div>
-            <div class="section-header"><div class="section-title">Futuros</div></div>
-            <div class="t-wrap panel" style="padding:0">
-              <table>
-                <thead><tr>
-                  <th onclick="sortTb('tb-fut',0)">Arquiteto</th>
-                  <th onclick="sortTb('tb-fut',1)">Cliente</th>
-                  <th onclick="sortTb('tb-fut',2)">Pontos</th>
-                  <th onclick="sortTb('tb-fut',3)">Previsão</th>
-                  <th class="t-actions">Ações</th>
-                </tr></thead>
-                <tbody id="tb-fut"><tr><td colspan="5" class="muted" style="font-size:12px;padding:20px">—</td></tr></tbody>
-              </table>
+
+        <!-- NÍVEL 1: cards de arquitetos -->
+        <div id="pag-nivel1">
+          <div class="section-header">
+            <div class="section-title">A Liberar — por Arquiteto</div>
+          </div>
+          <div id="arq-cards-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px">
+            <div class="muted" style="font-size:12px">—</div>
+          </div>
+          <div class="section-header">
+            <div class="section-title">Já Liberados</div>
+          </div>
+          <div class="t-wrap panel" style="padding:0">
+            <table>
+              <thead><tr>
+                <th onclick="sortTb('tb-don',0)">Arquiteto</th>
+                <th onclick="sortTb('tb-don',1)">Cliente</th>
+                <th onclick="sortTb('tb-don',2)">Pontos</th>
+                <th onclick="sortTb('tb-don',3)">Liberação</th>
+              </tr></thead>
+              <tbody id="tb-don"><tr><td colspan="4" class="muted" style="font-size:12px;padding:20px">—</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- NÍVEL 2: detalhe de um arquiteto -->
+        <div id="pag-nivel2" style="display:none">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px">
+            <button class="btn btn-ghost btn-sm" onclick="voltarPagNivel1()">← Voltar</button>
+            <div>
+              <div class="section-title" id="pag-arq-titulo">Arquiteto</div>
+              <div style="font-family:var(--font-mono);font-size:10px;color:var(--text3);margin-top:2px" id="pag-arq-subtitulo"></div>
             </div>
           </div>
-          <div>
-            <div class="section-header"><div class="section-title">Concluídos</div></div>
-            <div class="t-wrap panel" style="padding:0">
-              <table>
-                <thead><tr>
-                  <th onclick="sortTb('tb-don',0)">Arquiteto</th>
-                  <th onclick="sortTb('tb-don',1)">Cliente</th>
-                  <th onclick="sortTb('tb-don',2)">Pontos</th>
-                  <th onclick="sortTb('tb-don',3)">Liberação</th>
-                </tr></thead>
-                <tbody id="tb-don"><tr><td colspan="4" class="muted" style="font-size:12px;padding:20px">—</td></tr></tbody>
-              </table>
-            </div>
+          <div class="t-wrap panel" style="padding:0">
+            <table>
+              <thead><tr>
+                <th onclick="sortTb('tb-fut',0)">Cliente</th>
+                <th onclick="sortTb('tb-fut',1)">Data</th>
+                <th onclick="sortTb('tb-fut',2)">Pontos</th>
+                <th onclick="sortTb('tb-fut',3)">Previsão</th>
+                <th>Obs</th>
+                <th class="t-actions">Ações</th>
+              </tr></thead>
+              <tbody id="tb-fut"><tr><td colspan="6" class="muted" style="font-size:12px;padding:20px">—</td></tr></tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -1689,33 +1706,121 @@ function refreshGlobal() {
     .catch(function(err){ toast(err&&err.message ? err.message : "Erro global","err"); });
 }
 
+var _futurosAll = [];
+
 function renderPag(futuros, feitos) {
-  var tbF = $("tb-fut"); tbF.innerHTML = "";
-  if (!futuros||!futuros.length) { tbF.innerHTML='<tr><td colspan="5" class="muted" style="font-size:12px;padding:20px">—</td></tr>'; }
-  else {
-    futuros.sort(function(a,b){ return (a.previsao||"").localeCompare(b.previsao||""); });
-    futuros.forEach(function(r) {
-      _cache[r.id]=r;
-      var tr=document.createElement("tr");
-      tr.innerHTML='<td>'+e(r.arquiteto)+'</td><td>'+e(r.cliente)+'</td><td>'+e(String(r.pontos))+'</td><td>'+e(r.previsao||"")+'</td>'
-        +'<td class="t-actions">'
-        +'<button class="btn btn-ghost btn-sm" onclick="openEdit(\''+r.id+'\')">Editar</button> '
-        +'<button class="btn btn-primary btn-sm" onclick="admLiberar(\''+r.id+'\')">Liberar</button> '
-        +'<button class="btn btn-red btn-sm" onclick="admExcluir(\''+r.id+'\')">✕</button>'
-        +'</td>';
-      tbF.appendChild(tr);
+  _futurosAll = futuros || [];
+
+  // ── NÍVEL 1: cards agrupados por arquiteto ──
+  var grid = $("arq-cards-grid");
+  grid.innerHTML = "";
+
+  if (!_futurosAll.length) {
+    grid.innerHTML = '<div class="muted" style="font-size:12px;font-family:var(--font-mono)">Nenhum lançamento pendente.</div>';
+  } else {
+    // Agrupa por arquiteto
+    var grupos = {};
+    _futurosAll.forEach(function(r) {
+      _cache[r.id] = r;
+      if (!grupos[r.arquiteto]) grupos[r.arquiteto] = { total: 0, qtd: 0 };
+      grupos[r.arquiteto].total += r.pontos;
+      grupos[r.arquiteto].qtd++;
+    });
+
+    Object.keys(grupos).sort().forEach(function(nome) {
+      var g = grupos[nome];
+      var card = document.createElement("div");
+      card.className = "stat-card";
+      card.style.cursor = "pointer";
+      card.onclick = function() { abrirDetalheArquiteto(nome); };
+      card.innerHTML =
+        '<div class="stat-label">' + e(nome) + '</div>'
+        + '<div class="stat-value v-yellow" style="font-size:28px;margin-bottom:6px">' + g.total.toLocaleString("pt-BR") + '</div>'
+        + '<div style="font-family:var(--font-mono);font-size:10px;color:var(--text3)">'
+        + g.qtd + ' lançamento' + (g.qtd !== 1 ? 's' : '') + ' · clique para liberar →'
+        + '</div>';
+      grid.appendChild(card);
     });
   }
+
+  // ── CONCLUÍDOS ──
   var tbD = $("tb-don"); tbD.innerHTML = "";
-  if (!feitos||!feitos.length) { tbD.innerHTML='<tr><td colspan="4" class="muted" style="font-size:12px;padding:20px">—</td></tr>'; }
-  else {
+  if (!feitos || !feitos.length) {
+    tbD.innerHTML = '<tr><td colspan="4" class="muted" style="font-size:12px;padding:20px">—</td></tr>';
+  } else {
     feitos.sort(function(a,b){ return (b.liberacao||"").localeCompare(a.liberacao||""); });
     feitos.forEach(function(r) {
-      var tr=document.createElement("tr");
-      tr.innerHTML='<td>'+e(r.arquiteto)+'</td><td>'+e(r.cliente)+'</td><td>'+e(String(r.pontos))+'</td><td>'+e(r.liberacao||"")+'</td>';
+      var tr = document.createElement("tr");
+      tr.innerHTML = '<td>'+e(r.arquiteto)+'</td><td>'+e(r.cliente)+'</td><td>'+e(String(r.pontos))+'</td><td>'+e(r.liberacao||"")+'</td>';
       tbD.appendChild(tr);
     });
   }
+}
+
+function abrirDetalheArquiteto(nome) {
+  $("pag-nivel1").style.display = "none";
+  $("pag-nivel2").style.display = "block";
+
+  var registros = _futurosAll.filter(function(r){ return r.arquiteto === nome; });
+  var total = registros.reduce(function(a,b){ return a+b.pontos; }, 0);
+
+  $("pag-arq-titulo").textContent = nome;
+  $("pag-arq-subtitulo").textContent = registros.length + " lançamento(s) · " + total.toLocaleString("pt-BR") + " pts a liberar";
+
+  var tb = $("tb-fut"); tb.innerHTML = "";
+  registros.sort(function(a,b){ return (a.previsao||"").localeCompare(b.previsao||""); });
+  registros.forEach(function(r) {
+    _cache[r.id] = r;
+    var tr = document.createElement("tr");
+    tr.innerHTML = '<td>'+e(r.cliente)+'</td><td>'+e(r.data||"")+'</td><td>'+e(String(r.pontos))+'</td><td>'+e(r.previsao||"")+'</td>'
+      +'<td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text2);font-size:11px" title="'+e(r.observacao||"")+'">'+e(r.observacao||"—")+'</td>'
+      +'<td class="t-actions">'
+      +'<button class="btn btn-ghost btn-sm" onclick="openEdit(\''+r.id+'\')">Editar</button> '
+      +'<button class="btn btn-primary btn-sm" onclick="admLiberarEAtualizar(\''+r.id+'\',\''+e(nome)+'\')">Liberar</button> '
+      +'<button class="btn btn-red btn-sm" onclick="admExcluirEAtualizar(\''+r.id+'\',\''+e(nome)+'\')">✕</button>'
+      +'</td>';
+    tb.appendChild(tr);
+  });
+}
+
+function voltarPagNivel1() {
+  $("pag-nivel2").style.display = "none";
+  $("pag-nivel1").style.display = "block";
+}
+
+function admLiberarEAtualizar(id, nome) {
+  if (!confirm("Confirmar liberação dos pontos?")) return;
+  callScript("adminLiberarPontos", S.token, id)
+    .then(function() {
+      toast("Pontos liberados!", "ok");
+      // Remove do array local e re-renderiza
+      _futurosAll = _futurosAll.filter(function(r){ return r.id !== id; });
+      var restam = _futurosAll.filter(function(r){ return r.arquiteto === nome; });
+      if (restam.length > 0) {
+        abrirDetalheArquiteto(nome); // atualiza a tabela atual
+      } else {
+        voltarPagNivel1(); // volta se não tem mais
+      }
+      refreshGlobal(); loadArquitetosAdmin();
+    })
+    .catch(function(err){ toast(err&&err.message ? err.message : "Erro","err"); });
+}
+
+function admExcluirEAtualizar(id, nome) {
+  if (!confirm("Excluir este lançamento?")) return;
+  callScript("adminExcluirLancamento", S.token, id)
+    .then(function() {
+      toast("Lançamento excluído.", "info");
+      _futurosAll = _futurosAll.filter(function(r){ return r.id !== id; });
+      var restam = _futurosAll.filter(function(r){ return r.arquiteto === nome; });
+      if (restam.length > 0) {
+        abrirDetalheArquiteto(nome);
+      } else {
+        voltarPagNivel1();
+      }
+      refreshGlobal(); loadArquitetosAdmin();
+    })
+    .catch(function(err){ toast(err&&err.message ? err.message : "Erro","err"); });
 }
 
 function renderResg(abertos, conc) {
